@@ -6,12 +6,12 @@ class OptionChain:
 
     ticker = ''
     expirationType = '' # monthly or watever
-    timeCreated = None
+    timestamp = None
 
-    def __init__(self, ticker, expirationType, timeCreated):
+    def __init__(self, ticker, expirationType, timestamp):
         self.ticker = ticker
         self.expirationType = expirationType
-        self.timeCreated = timeCreated
+        self.timestamp = timestamp
 
     def saveToPickle(self):
         fileName = self.toFileName()
@@ -20,7 +20,7 @@ class OptionChain:
         print ('Saved file: ' + fileName)
         
     def toFileName(self):
-        return self.ticker + '_' + self.expirationType + '_' + str(self.timeCreated) + '.pkl'
+        return self.ticker + '_' + self.expirationType + '_' + str(self.timestamp) + '.pkl'
 
     
     
