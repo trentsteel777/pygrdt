@@ -2,8 +2,8 @@ from django.db import models
 from django.utils import timezone
 
 class Watchlist(models.Model):
-    title = models.CharField(max_length=200)
-    tickers = []
+    name = models.CharField(max_length=200)
+    tickers = models.ForeignKey(Reporter, on_delete=models.CASCADE)
 
 
     def __str__(self):

@@ -4,9 +4,9 @@ class OptionChain:
     callList = []
     putList = []
 
-    ticker = ''
-    expirationType = '' # monthly or watever
-    timestamp = None
+    ticker = models.ForeignKey(Stock, on_delete=models.CASCADE)
+    expirationType = models.CharField(max_length=30) # monthly or watever
+    timestamp =  models.DateTimeField(auto_now_add=True)
 
     def __init__(self, ticker, expirationType, timestamp):
         self.ticker = ticker

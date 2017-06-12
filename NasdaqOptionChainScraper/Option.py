@@ -9,13 +9,15 @@ class Option(models.Model):
     )
     
     optionType = models.CharField(
-        max_length=4
+        max_length=4,
         choices=OPTION_TYPES,
         primary_key=True,
     )
     timestamp = models.DateTimeField(
         primary_key=True,
     )
+    
+    optionChain = models.ForeignKey(OptionChain, on_delete=models.CASCADE)
      
     nasdaqName = models.CharField(max_length=30)
     contractName = models.CharField(max_length=30)
@@ -28,12 +30,11 @@ class Option(models.Model):
     ticker = models.CharField(max_length=5)
     strike = models.DecimalField(max_digits=12, decimal_places=2)
 
-
         
     def getIds(self):
         return '[ ' + self.ticker + ' ' + self.type + ' ' + self.nasdaqName + ' ]'
 
-    def getOptionType:
+    def getOptionType(self):
         return ''
 
     def getExpirationType:
