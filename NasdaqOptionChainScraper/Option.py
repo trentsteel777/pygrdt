@@ -37,5 +37,5 @@ class Option(models.Model):
     def getOptionType(self):
         return ''
 
-    def getExpirationType:
+    def getExpirationType(self):
         return ''
