@@ -7,33 +7,38 @@ import pickle
 class Watchlist(models.Model):
     name = models.CharField(max_length=45)
 
+class Ticker(models.Model):
+    ticker = models.CharField(max_length=5)
+    watchlist = models.ForeignKey(Watchlist, on_delete=models.CASCADE)
     
 class Stock(models.Model):
-    ticker = models.CharField(max_length=5)
     price = models.DecimalField(max_digits=12, decimal_places=2)
     nextEarningsDate = models.DateField()
     timestamp = models.DateTimeField()
     
-    watchlist = models.ForeignKey(Watchlist, on_delete=models.CASCADE)
+    ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE)
     
 class OptionChain(models.Model):
 
-    #ticker = models.CharField(max_length=5)
     expirationType = models.CharField(max_length=30) # monthly or whatever
-    #timestamp =  models.DateTimeField(auto_now_add=True)
     
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
+    
+    def saveToPickle(self):
+        fileName = self.toFileName()
+        with open(fileName, 'wb') as f:
+            pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+        print ('Saved file: ' + fileName)
+        
+    def toFileName(self):
+        return self.stock.ticker + '_' + self.expirationType + '_' + str(self.stock.timestamp) + '.pkl'
     
 class Option(models.Model):
     
     CALL = 'CALL'
     PUT = 'PUT'
     
-    #ticker = models.CharField(max_length=5)
     optionType = models.CharField(max_length=4)
-    #timestamp = models.DateTimeField()
-    
-     
     nasdaqName = models.CharField(max_length=30)
     contractName = models.CharField(max_length=30)
     last = models.DecimalField(max_digits=8, decimal_places=2)
