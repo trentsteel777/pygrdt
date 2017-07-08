@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<!--[if IE 8]>
+<html id="ie8" lang="en-US" prefix="og: http://ogp.me/ns#">
+<![endif]-->
+<!--[if !(IE 8) ]><!-->
+<html prefix="og: http://ogp.me/ns#" lang="en-US"><!--<![endif]--><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<!-- 	This file is part of a WordPress theme for sale at ThemeForest.net.
+		See: http://themeforest.net/item/keilir-responsive-wordpress-blog-theme/4893662
+		Copyright 2013 Bluthemes 	-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python Celery &amp; RabbitMQ Tutorial (Demo, Source Code) - Tests4Geeks</title><link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="pingback" href="https://tests4geeks.com/blog/xmlrpc.php">
+<!--[if lt IE 9]>
+<script src="https://tests4geeks.com/blog/wp-content/themes/keilir/assets/js/html5.js" type="text/javascript"></script>
+<![endif]-->
+
+<script async="" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/analytics.js"></script><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-36864041-1', 'auto');
+ga('send', 'pageview');</script>
+<!-- This site is optimized with the Yoast SEO plugin v3.2.4 - https://yoast.com/wordpress/plugins/seo/ -->
+<link rel="canonical" href="https://tests4geeks.com/python-celery-rabbitmq-tutorial/">
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python Celery &amp; RabbitMQ Tutorial (Demo, Source Code) - Tests4Geeks">
+<meta property="og:description" content="Celery is an asynchronous task queue. It can be used for anything that needs to be run asynchronously. For example, background computation of expensive queries. RabbitMQ&nbsp;is a message broker widely used with Celery. In this tutorial, we are going to have an introduction to basic concepts of Celery with RabbitMQ and then set up Celery … Continue reading...">
+<meta property="og:url" content="https://tests4geeks.com/python-celery-rabbitmq-tutorial/">
+<meta property="og:site_name" content="Tests4Geeks">
+<meta property="article:tag" content="Python">
+<meta property="article:section" content="Blog">
+<meta property="article:published_time" content="2016-04-26T07:48:40+00:00">
+<meta property="article:modified_time" content="2017-05-14T08:03:49+00:00">
+<meta property="og:updated_time" content="2017-05-14T08:03:49+00:00">
+<meta property="og:image" content="https://tests4geeks.com/tutorials/wp-content/uploads/2016/04/celery-flower.gif">
+<meta property="og:image" content="https://tests4geeks.com/tutorials/wp-content/uploads/2016/04/celery_architecture_final-740x472.png">
+<meta property="og:image" content="https://tests4geeks.com/tutorials/wp-content/uploads/2016/04/screen_shot_9-740x279.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:description" content="Celery is an asynchronous task queue. It can be used for anything that needs to be run asynchronously. For example, background computation of expensive queries. RabbitMQ&nbsp;is a message broker widely used with Celery. In this tutorial, we are going to have an introduction to basic concepts of Celery with RabbitMQ and then set up Celery […] Continue reading...">
+<meta name="twitter:title" content="Python Celery &amp; RabbitMQ Tutorial (Demo, Source Code) - Tests4Geeks">
+<meta name="twitter:site" content="@tests4geeks">
+<meta name="twitter:image" content="https://tests4geeks.com/tutorials/wp-content/uploads/2016/04/celery-flower.gif">
+<meta name="twitter:creator" content="@tests4geeks">
+<!-- / Yoast SEO plugin. -->
+
+<link rel="alternate" type="application/rss+xml" title="Tests4Geeks » Feed" href="https://tests4geeks.com/feed/">
+<link rel="alternate" type="application/rss+xml" title="Tests4Geeks » Comments Feed" href="https://tests4geeks.com/comments/feed/">
+<link rel="alternate" type="application/rss+xml" title="Tests4Geeks » Python Celery &amp; RabbitMQ Tutorial Comments Feed" href="https://tests4geeks.com/python-celery-rabbitmq-tutorial/feed/">
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/72x72\/","ext":".png","source":{"concatemoji":"https:\/\/tests4geeks.com\/blog\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.3"}};
+			!function(a,b,c){function d(a){var c=b.createElement("canvas"),d=c.getContext&&c.getContext("2d");return d&&d.fillText?(d.textBaseline="top",d.font="600 32px Arial","flag"===a?(d.fillText(String.fromCharCode(55356,56812,55356,56807),0,0),c.toDataURL().length>3e3):(d.fillText(String.fromCharCode(55357,56835),0,0),0!==d.getImageData(16,16,1,1).data[0])):!1}function e(a){var c=b.createElement("script");c.src=a,c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g;c.supports={simple:d("simple"),flag:d("flag")},c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.simple&&c.supports.flag||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script><script src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/wp-emoji-release.js" type="text/javascript"></script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel="stylesheet" id="keilir-all-css" href="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/allminified3.css" type="text/css" media="all">
+<link rel="stylesheet" id="keilir-googlefonts-css" href="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/css.css" type="text/css" media="all">
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://tests4geeks.com/blog/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://tests4geeks.com/blog/wp-includes/wlwmanifest.xml"> 
+<meta name="generator" content="WordPress 4.3">
+
+<style>
+h1,h2,h3,h4,h5{font-family: "Source Sans Pro",serif;} .widget_calendar table > caption{font-family: "Source Sans Pro",serif;} body{font-family: "Lato",Helvetica,sans-serif;} .navbar .nav > li > a, .navbar .brand p{font-family: "Lato",Helvetica,sans-serif;} .navbar .brand-text{font-family: "Lato",Helvetica,sans-serif;} </style>
+<link rel="Shortcut Icon" type="image/x-icon" href="https://tests4geeks.com/tutorials/wp-content/uploads/2016/04/favicon.png">				<!-- WordPress Popular Posts v3.3.4 -->
+				<script type="text/javascript">
+
+					var sampling_active = 0;
+					var sampling_rate   = 100;
+					var do_request = false;
+
+					if ( !sampling_active ) {
+						do_request = true;
+					} else {
+						var num = Math.floor(Math.random() * sampling_rate) + 1;
+						do_request = ( 1 === num );
+					}
+
+					if ( do_request ) {
+
+						/* Create XMLHttpRequest object and set variables */
+						var xhr = ( window.XMLHttpRequest )
+						  ? new XMLHttpRequest()
+						  : new ActiveXObject( "Microsoft.XMLHTTP" ),
+						url = 'https://tests4geeks.com/blog/wp-admin/admin-ajax.php',
+						params = 'action=update_views_ajax&token=488dac9a56&wpp_id=531';
+						/* Set request method and target URL */
+						xhr.open( "POST", url, true );
+						/* Set request header */
+						xhr.setRequestHeader( "Content-type", "application/x-www-form-urlencoded" );
+						/* Hook into onreadystatechange */
+						xhr.onreadystatechange = function() {
+							if ( 4 === xhr.readyState && 200 === xhr.status ) {
+								if ( window.console && window.console.log ) {
+									window.console.log( xhr.responseText );
+								}
+							}
+						};
+						/* Send request */
+						xhr.send( params );
+
+					}
+
+				</script>
+				<!-- End WordPress Popular Posts v3.3.4 -->
+				<style type="text/css" id="syntaxhighlighteranchor"></style>
+<style type="text/css">
+	.tab_icon.bl_tab_cat_53,.post-format-badge.post-format-badge-53{ background-color: #aadb91; }.tab_icon.bl_tab_cat_54,.post-format-badge.post-format-badge-54{ background-color: #aadb91; }.tab_icon.bl_tab_cat_51,.post-format-badge.post-format-badge-51{ background-color: #aadb91; }.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus{ background: rgba(0,0,0,0.05); }body{ background: #E9F0F4; } header.entry-header{ background: #5cb45d; } .dropdown-menu,header#masthead,.navbar-inverse .navbar-inner{ background: #f8f8f8; } div.navbar-inverse .nav-collapse .nav > li > a, .navbar-inverse .nav-collapse .dropdown-menu a{color:#777777!important; } .widget-head{ background: #999999; } .archive .entry-header{ background: #5cb45d; } .archive .entry-header h1{ color: #333333; } .archive .entry-header p{ color: #5cb45d; } .widget-head{color:#ffffff;} footer.site-footer{ background:#5cb45d;} .post-format-standard{background-color: #aadb91}.tab_standard{background-color:#aadb91;}.format-standard .entry-content .post-meta ~ * a, .format-standard .entry-content .post-meta a:hover, .format-standard .entry-content .entry-title a:hover{color: #aadb91;} #related-posts .box.related-standard{border-top: 3px solid #aadb91;}.post-format-gallery{background-color: #4782A6}.tab_gallery{background-color:#4782A6;}.format-gallery .entry-content .post-meta ~ * a, .format-gallery .entry-content .post-meta a:hover, .format-gallery .entry-content .entry-title a:hover{color: #4782A6; }#related-posts .box.related-gallery{border-top: 3px solid #4782A6;}.post-format-image{background-color: #B0CB7A}.tab_image{background-color:#B0CB7A;}.format-image .entry-content .post-meta ~ * a, .format-image .entry-content .post-meta a:hover, .format-image .entry-content .entry-title a:hover{color: #B0CB7A;} #related-posts .box.related-image{border-top: 3px solid #B0CB7A;}.post-format-link{background-color: #9664B5}.tab_link{background-color:#9664B5;}.format-link .entry-content .post-meta ~ * a, .format-link .entry-content .post-meta a:hover, .format-link .entry-content .entry-title a:hover{color: #9664B5;} #related-posts .box.related-link{border-top: 3px solid #9664B5;}.post-format-quote{background-color: #85A9B3}.tab_quote{background-color:#85A9B3;}.format-quote .entry-content .post-meta ~ * a, .format-quote .entry-content .post-meta a:hover, .format-quote .entry-content .entry-title a:hover{color: #85A9B3;} #related-posts .box.related-quote{border-top: 3px solid #85A9B3;}.post-format-audio{background-color: #EF7336}.tab_audio{background-color:#EF7336;}.format-audio .entry-content .post-meta ~ * a, .format-audio .entry-content .post-meta a:hover, .format-audio .entry-content .entry-title a:hover{color: #EF7336;} #related-posts .box.related-audio{border-top: 3px solid #EF7336;}.post-format-video{background-color: #85CCB1}.tab_video{background-color:#85CCB1;}.format-video .entry-content .post-meta ~ * a, .format-video .entry-content .post-meta a:hover, .format-video .entry-content .entry-title a:hover{color: #85CCB1;} #related-posts .box.related-video{border-top: 3px solid #85CCB1;}.post-format-facebook{background-color: #49659F}.tab_facebook{background-color:#49659F;}.format-facebook .entry-content .post-meta ~ * a, .format-facebook .entry-content .post-meta a:hover, .format-facebook .entry-content .entry-title a:hover{color: #49659F;} #related-posts .box.related-facebook{border-top: 3px solid #49659F;}.post-format-twitter{background-color: #00ACED}.tab_twitter{background-color:#00ACED;}.format-twitter .entry-content .post-meta ~ * a, .format-twitter .entry-content .post-meta a:hover, .format-twitter .entry-content .entry-title a:hover{color: #00ACED;} #related-posts .box.related-twitter{border-top: 3px solid #00ACED;}.sticky .post-format-badge{background-color: #585756}.sticky .entry-content .post-meta ~ * a, .sticky .entry-content .post-meta a:hover, .sticky .entry-content .entry-title a:hover{color: #585756;}.top-color .first_col{background: #aadb91;}.top-color .second_col{background: #85CCB1;}.top-color .third_col{background: #85A9B3;}.top-color .fourth_col{background: #B0CB7A;}.entry-image a:hover img{-webkit-transform: none;-moz-transform:none;-ms-transform:none;-o-transform:none;transform:none;}.entry-title{font-size: 40px;}.entry-content p{font-size: 18px;}body{font-size: 14px;}article.type-page .title{font-size: 40px;}.the-content, .the-content p{font-size: 18px;}body{background-color:#f0f0f0;}
+header#masthead{
+border-bottom: 1px solid #d4d4d4;
+}
+.btn.btn-navbar, .btn.btn-navbar:hover, .btn.btn-navbar:active, .btn.btn-navbar:focus {
+background-color:#5cb45d;
+}
+.navbar a.brand.brand-text {
+padding: 5px 20px 0 20px;
+color:#333333;
+}
+.navbar a.brand.brand-text span {
+font-weight:bold;
+}
+.navbar a.brand.brand-text p {
+color:#666666;
+}
+.btn-primary, .label-primary, #commentform #submit, .widget_search input[type="submit"], article.post .entry-content a.btn-primary {
+background-color: #5cb45d;
+}
+.format-standard .entry-content .post-meta~* a, .format-standard .entry-content .post-meta a:hover, .format-standard .entry-content .entry-title a:hover { color: #6ac6e8; }
+#related-posts .box.related-standard {border-top-color:#5cb45d;}
+.btn-primary:hover, #commentform #submit:hover, article.post .entry-content a.btn-primary:hover { background-color:  #aadb91;}
+#searchsubmit { background-color: #999999; }
+p { margin: 0 0 20px; }
+.img-thumbnail{display:inline-block;max-width:100%;height:auto;padding:4px;line-height:1.42857143;background-color:#fff;border:1px solid #ddd;border-radius:4px;-webkit-transition:all .2s ease-in-out;-o-transition:all .2s ease-in-out;transition:all .2s ease-in-out}
+.entry-content { padding: 40px; }
+.entry-content p, .entry-content h2 {margin-bottom: 30px;}
+.entry-content h3, .entry-content h4, .entry-content h5 {margin-bottom: 20px;}
+.entry-content li {font-size: 18px;margin: 0 0 10px;}
+.entry-content ul, .entry-content pre {margin-bottom:30px;}
+.entry-content p, .entry-content li {color: #616161;line-height: 1.75;font-size: 19px;font-family: 'Noto Sans',sans-serif;}
+.post-meta ul li {font-size: 16px; line-height: 1;}
+pre {padding:0;}
+.mashsb-container { padding-bottom:35px !important;padding-top:0px !important;}
+.mashsb-container h3 {margin-top:0px !important;}
+.side-link { margin-top:10px;}
+.side-link a { color:#6ac6e8 !important; }
+h1 {letter-spacing: -0.5px;}
+.entry-container {
+border-radius: 4px 4px 0 0;
+border: 1px solid #d4d4d4;
+border-bottom-width: 0;
+}
+footer.entry-meta {border-width: 1px;}
+.widget-head { background: #5cb45d; }
+.footer-author {cursor: pointer; color: #878787;}
+.more-link {margin-top: 10px;}
+#footer-body .popular-posts{background:transparent;border:none;padding:0;}
+.site-footer #footer-body .popular-posts a:hover{background:#82b965;transform:scale(1.04);-ms-transform:scale(1.04);-webkit-transform:scale(1.04);color:#fff!important;}
+#side-bar div.popular-posts{padding:0;}
+#side-bar div.popular-posts .widget-head{margin:0;}
+.popular-posts > ul{list-style:none;margin:0;}
+#side-bar .popular-posts li{display:block;padding:8px 15px 8px 18px;border-bottom:1px solid #eee;}
+.popular-posts li a{display:block;text-decoration:none;font-weight:400;color:#717171;font-size:16px;}
+#side-bar .popular-posts li:hover{border-left:3px solid #82b965;background:#F8F8F8;padding:8px 15px;}
+#main { padding-top: 105px;}
+#masthead { margin-bottom: 30px;}
+.clear {clear:both;}
+.clear:after{clear:both;}
+pre, pre code {border: none;border-radius: 0;}
+#side-bar > div.quads-ad1_widget, #side-bar > div.quads-ad2_widget {padding: 0; border-radius: 0; border-bottom:none;}
+@media (max-width:767px){ 
+.entry-title, h1 { font-size: 28px;} 
+h2 { font-size: 24px;}
+h3 { font-size: 22px;}
+h4 { font-size: 18px;}
+.entry-container .entry-content { padding: 30px 20px 30px;}
+.post-footer-like {position: inherit; bottom: inherit; right: inherit;}
+footer.entry-meta > .pull-left {float:left;}
+.entry-content p {margin-bottom: 20px;font-size: 16px;}
+.entry-content h2, .entry-content h3, .entry-content h4, .entry-content h5 {margin-bottom: 20px;}
+.post-meta ul li {font-size: 14px;}
+}
+.mashsb-in-post .mashsb-buttons a {float: none;}
+.mashsb-in-post {text-align:center; margin-bottom:30px;}
+.mashsb-in-post p {margin-bottom:5px;}
+.format-standard .entry-content .post-meta~* a, .format-standard .entry-content .post-meta a:hover, .format-standard .entry-content .entry-title a:hover { color: #08c; }
+.bctt-click-to-tweet {  
+  background: #F7F7F7; }
+.bctt-ctt-text a {  
+  color: #AFB6BB !important;
+  font-weight: 100;
+}
+  .bctt-ctt-text a:hover {
+    text-decoration: none; }</style>
+</head>
+<body class="single single-post postid-531 single-format-standard">
+<div id="page" class="site">
+		<header id="masthead" role="banner">
+				<div class="container">
+
+			<div class="navbar navbar-inverse">
+			  <div class="navbar-inner">
+			    <!-- Responsive Navbar Part 1: Button for triggering responsive navbar (not covered in tutorial). Include responsive CSS to utilize. -->
+			    <button data-target=".nav-collapse" data-toggle="collapse" class="btn btn-navbar" type="button"><i class="icon-menu-1"></i></button>
+				<a class="brand brand-text brand-tagline" href="https://tests4geeks.com/blog/" title="Tests4Geeks Blog"><span>Tests4Geeks Blog</span><p>Interview Questions, Hiring Tips, Tutorials</p></a><div class="nav-collapse collapse"><ul id="menu-top-menu" class="nav"><li id="menu-item-102" class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://tests4geeks.com/blog/">Blog</a></li><li id="menu-item-14" class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://tests4geeks.com/">Home</a></li><li id="menu-item-18" class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://tests4geeks.com/contact">Contact</a></li></ul></div>			  </div><!-- /.navbar-inner -->
+			</div>
+
+		</div>
+	</header><!-- #masthead .site-header -->
+	<div id="main" class="container">	<div id="primary" class="row layout_right_side">
+
+		<div id="content" class="span9" role="main">
+
+			
+				
+					<article id="post-531" class="post-531 post type-post status-publish format-standard hentry category-blog category-tutorials tag-python">
+
+				<div class="entry-container">
+			<div class="entry-content">
+			<h1 class="entry-title"><a href="https://tests4geeks.com/python-celery-rabbitmq-tutorial/">Python Celery &amp; RabbitMQ Tutorial</a></h1>
+			<div class="post-meta">
+				<ul>
+	<li><i class="icon-clock-1"></i> <time class="entry-date" datetime="2016-04-26T07:48:40+00:00">April 26, 2016</time></li>
+	<li><i class="icon-folder-1"></i> <a href="https://tests4geeks.com/tutorials/" title="View all posts in Programming Tutorials">Programming Tutorials</a> </li>	
+		<li><i class="icon-comment-1"></i> <a class="comment_count" data-post="531" href="https://tests4geeks.com/python-celery-rabbitmq-tutorial/#comments">10 Comments</a></li><li><i class="icon-tag-1"></i> <a href="https://tests4geeks.com/tag/python/" rel="tag">Python</a></li></ul>
+			</div>
+			<p><a href="http://www.celeryproject.org/" target="_blank" rel="nofollow">Celery</a>
+ is an asynchronous task queue. It can be used for anything that needs 
+to be run asynchronously. For example, background computation of 
+expensive queries. <a href="https://www.rabbitmq.com/" target="_blank" rel="nofollow">RabbitMQ</a>&nbsp;is
+ a message broker widely used with Celery. In this tutorial, we are 
+going to have an introduction to basic concepts of Celery with RabbitMQ 
+and then set up Celery for a <a href="https://github.com/jimmykobe1171/celery-demo/tree/master" target="_blank" rel="nofollow">small demo project</a>. At the end of this tutorial, you will be able to setup a Celery web console monitoring your tasks.</p>
+<p><a class="lightbox" href="https://tests4geeks.com/tutorials/wp-content/uploads/2016/04/celery-flower.gif"><img class="alignnone size-medium wp-image-694" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/celery-flower.gif" alt="celery-flower" width="740" height="503"></a></p>
+<h2>Basic Concepts</h2>
+<p>Let’s use the below graphic to explain the foundations:<a class="lightbox" href="https://tests4geeks.com/tutorials/wp-content/uploads/2016/04/celery_architecture_final.png"><img class="alignnone size-medium wp-image-603" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/celery_architecture_final-740x472.png" alt="celery_architecture_final" width="740" height="472"></a></p>
+<h3>Broker</h3>
+<p>The Broker (RabbitMQ) is responsible for the creation of task queues,
+ dispatching tasks to task queues according to some routing rules, and 
+then delivering tasks from task queues to workers.</p>
+<h3>Consumer (Celery Workers)</h3>
+<p>The Consumer is the one or multiple Celery workers executing the tasks. You could start many workers depending on your use case.</p>
+<h3>Result Backend</h3>
+<p>The Result Backend is used for storing the results of your tasks. 
+However, it is not a required element, so if you do&nbsp;not include it 
+in your settings, you cannot access the results of your tasks.<br>
+<span id="more-531"></span></p>
+<h2>Install Celery</h2>
+<p>First, we need to install Celery, which is pretty easy using <a href="https://pypi.python.org/pypi" target="_blank" rel="nofollow">PyPI</a>:</p>
+<pre><code class="bash hljs">
+$ pip install celery
+
+</code></pre>
+<p>Note that it would be better to do this using a virtual environment.</p>
+<h2>Choose a broker: RabbitMQ</h2>
+<p>This is where&nbsp;the confusion begins. Why do we need another thing called <code>broker</code>?
+ It’s because Celery does not actually construct a message queue itself,
+ so it needs an extra message transport (a broker) to do that work. You 
+can think of Celery as a wrapper around a message broker.</p>
+<p>In fact, you can choose from a few different brokers, like RabbitMQ, <a href="http://docs.celeryproject.org/en/latest/getting-started/brokers/redis.html#broker-redis" target="_blank" rel="nofollow">Redis</a>, or a database (e.g., a <a href="http://docs.celeryproject.org/en/latest/getting-started/brokers/django.html#broker-django" target="_blank" rel="nofollow">Django database</a>).</p>
+<p>In this tutorial, we are using RabbitMQ as our broker because it is 
+feature-complete, stable and recommended by Celery. In Mac OS, it is 
+easy to install RabbitMQ using <a href="http://brew.sh/" target="_blank" rel="nofollow">Homebrew</a>:</p>
+<pre><code class="bash hljs">
+$ brew install rabbitmq
+<span class="hljs-comment"># if you are using Ubuntu or Debian, try:</span>
+<span class="hljs-comment"># sudo apt-get install rabbitmq-server</span>
+
+</code></pre>
+<h2>Start RabbitMQ</h2>
+<p>Homebrew will install RabbitMQ in <code>/usr/local/sbin </code>although
+ some systems may vary. You can add this path to the environment 
+variable PATH for convenient usage later. For example, open your shell 
+startup file (eg.<code>~/.bash_profile</code>) and add the following line:</p>
+<pre><code class="bash hljs">
+PATH=<span class="hljs-variable">$PATH</span>:/usr/<span class="hljs-built_in">local</span>/sbin
+
+</code></pre>
+<p>Now we can start the RabbitMQ server using the command <code>rabbitmq-server</code>. You will see similar output if the RabbitMQ server starts successfully.</p>
+<pre><code class="bash hljs">
+$ rabbitmq-server
+
+              RabbitMQ 3.5.1. Copyright (C) 2007-2014 GoPivotal, Inc.
+  <span class="hljs-comment">##  ##      Licensed under the MPL.  See http://www.rabbitmq.com/</span>
+  <span class="hljs-comment">##  ##</span>
+  <span class="hljs-comment">##########  Logs: /usr/local/var/log/rabbitmq/rabbit@localhost.log</span>
+  <span class="hljs-comment">######  ##        /usr/local/var/log/rabbitmq/rabbit@localhost-sasl.log</span>
+  <span class="hljs-comment">##########</span>
+              Starting broker... completed with 10 plugins.
+
+</code></pre>
+<h2>Configure RabbitMQ for Celery</h2>
+<p>Before we can use RabbitMQ for Celery, we need to do some 
+configurations for RabbitMQ. Briefly speaking, we need to create a 
+virtual host and user, then set user permissions so it can access the 
+virtual host.</p>
+<pre><code class="bash hljs">
+<span class="hljs-comment"># add user 'jimmy' with password 'jimmy123'</span>
+$ rabbitmqctl add_user jimmy jimmy123
+<span class="hljs-comment"># add virtual host 'jimmy_vhost'</span>
+$ rabbitmqctl add_vhost jimmy_vhost
+<span class="hljs-comment"># add user tag 'jimmy_tag' for user 'jimmy'</span>
+$ rabbitmqctl <span class="hljs-built_in">set</span>_user_tags jimmy jimmy_tag
+<span class="hljs-comment"># set permission for user 'jimmy' on virtual host 'jimmy_vhost'</span>
+$ rabbitmqctl <span class="hljs-built_in">set</span>_permissions -p jimmy_vhost jimmy <span class="hljs-string">".*"</span> <span class="hljs-string">".*"</span> <span class="hljs-string">".*"</span>
+
+</code></pre>
+<p>Note that there are three kinds of operations in RabbitMQ: <code>configure</code>, <code>write</code> and <code>read</code>.</p>
+<p>The <code>".*" ".*" ".*"</code> string at the end of the above 
+command means that the user “jimmy” will have all configure, write and 
+read permissions. To find more information about permission control in 
+RabbitMQ, you can refer to <a href="http://www.rabbitmq.com/access-control.html" target="_blank" rel="nofollow">http://www.rabbitmq.com/access-control.html</a></p>
+<h2>A Simple Demo Project</h2>
+<p>Now let’s create a simple project to demonstrate the use of Celery.&nbsp; You can find the <a href="https://github.com/jimmykobe1171/celery-demo/tree/master" target="_blank" rel="nofollow">demo on Github here</a>.</p>
+<span class="bctt-click-to-tweet"><span class="bctt-ctt-text"><a href="https://twitter.com/intent/tweet?text=Python%20Celery%20%26%20RabbitMQ%20Tutorial%20-%20Step%20by%20Step%20Guide%20with%20Demo%20and%20Source%20Code&amp;url=https://tests4geeks.com/python-celery-rabbitmq-tutorial/" target="_blank">Python Celery &amp; RabbitMQ Tutorial - Step by Step Guide with Demo and Source Code </a></span><a href="https://twitter.com/intent/tweet?text=Python%20Celery%20%26%20RabbitMQ%20Tutorial%20-%20Step%20by%20Step%20Guide%20with%20Demo%20and%20Source%20Code&amp;url=https://tests4geeks.com/python-celery-rabbitmq-tutorial/" target="_blank" class="bctt-ctt-btn">Click To Tweet</a></span>
+<h3>Project Structure</h3>
+<p>Below is the structure of our demo project.</p>
+<pre><code class="python hljs">
+test_celery
+    __init__.py
+    celery.py
+    tasks.py
+    run_tasks.py
+
+</code></pre>
+<h3>celery.py</h3>
+<p>Add the following code in celery.py:</p>
+<pre><code class="python hljs">
+<span class="hljs-keyword">from</span> __future__ <span class="hljs-keyword">import</span> absolute_import
+<span class="hljs-keyword">from</span> celery <span class="hljs-keyword">import</span> Celery
+
+app = Celery(<span class="hljs-string">'test_celery'</span>,
+             broker=<span class="hljs-string">'amqp://jimmy:jimmy123@localhost/jimmy_vhost'</span>,
+             backend=<span class="hljs-string">'rpc://'</span>,
+             include=[<span class="hljs-string">'test_celery.tasks'</span>])
+
+</code></pre>
+<p>Here, we initialize an instance of Celery called app, which is used later for creating a task.</p>
+<p>The first argument of Celery is just the name of the project package, which is “test_celery”.</p>
+<p>The <code>broker</code> argument specifies the broker URL, which 
+should be the RabbitMQ we started earlier. Note that the format of 
+broker URL should be:<br>
+<code>transport://userid:password@hostname:port/virtual_host</code></p>
+<p>For RabbitMQ, the <code>transport</code> is <code>amqp.</code></p>
+<p>The <code>backend</code> argument specifies a backend URL. A backend 
+in Celery is used for storing the task results. So if you need to access
+ the results of your task when it is finished, you should set a backend 
+for Celery.</p>
+<p><code>rpc</code> means sending the results back as AMQP messages, 
+which is an acceptable format for our demo. More choices for message 
+formats can be found <a href="http://docs.celeryproject.org/en/latest/configuration.html#std:setting-CELERY_RESULT_BACKEND" target="_blank" rel="nofollow">here.</a></p>
+<p>The <code>include</code> argument specifies a list of modules that 
+you want to import when Celery worker starts. We add the tasks module 
+here so that the worker can find our task.</p>
+<h3>tasks.py</h3>
+<p>In this file, we define our task <code>longtime_add</code>:</p>
+<pre><code class="python hljs">
+<span class="hljs-keyword">from</span> __future__ <span class="hljs-keyword">import</span> absolute_import
+<span class="hljs-keyword">from</span> test_celery.celery <span class="hljs-keyword">import</span> app
+<span class="hljs-keyword">import</span> time
+
+
+<span class="hljs-meta">@app.task</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">longtime_add</span><span class="hljs-params">(x, y)</span>:</span>
+    <span class="hljs-keyword">print</span> <span class="hljs-string">'long time task begins'</span>
+    <span class="hljs-comment"># sleep 5 seconds</span>
+    time.sleep(<span class="hljs-number">5</span>)
+    <span class="hljs-keyword">print</span> <span class="hljs-string">'long time task finished'</span>
+    <span class="hljs-keyword">return</span> x + y
+
+</code></pre>
+<p>You can see that we import the <code>app</code> defined in the previous <code>celery</code> module and use it as a decorator for our task method. Note that <code>app.task</code> is just a decorator. In addition, we sleep 5 seconds in our <code>longtime_add</code> task to simulate a time-expensive task:)</p>
+<h3>run_tasks.py</h3>
+<p>After setting up Celery, we need to run our task, which is included in the <code>runs_tasks.py</code>:</p>
+<pre><code class="python hljs">
+<span class="hljs-keyword">from</span> .tasks <span class="hljs-keyword">import</span> longtime_add
+<span class="hljs-keyword">import</span> time
+
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+    result = longtime_add.delay(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>)
+    <span class="hljs-comment"># at this time, our task is not finished, so it will return False</span>
+    <span class="hljs-keyword">print</span> <span class="hljs-string">'Task finished? '</span>, result.ready()
+    <span class="hljs-keyword">print</span> <span class="hljs-string">'Task result: '</span>, result.result
+    <span class="hljs-comment"># sleep 10 seconds to ensure the task has been finished</span>
+    time.sleep(<span class="hljs-number">10</span>)
+    <span class="hljs-comment"># now the task should be finished and ready method will return True</span>
+    <span class="hljs-keyword">print</span> <span class="hljs-string">'Task finished? '</span>, result.ready()
+    <span class="hljs-keyword">print</span> <span class="hljs-string">'Task result: '</span>, result.result
+
+</code></pre>
+<p>Here, we call the task <code>longtime_add</code> using the <code>delay</code>
+ method, which is needed if we want to process the task asynchronously. 
+In addition, we keep the results of the task and print some information.
+ The <code>ready</code> method will return <strong>True</strong> if the task has been finished, otherwise <strong>False</strong>. The <code>result</code> attribute is the result of the task (“3” in our case). If the task has not been finished, it returns <strong>None</strong>.</p>
+<h3>Start Celery Worker</h3>
+<p>Now, we can start Celery worker using the command below (run in the parent folder of our project folder <strong>test_celery</strong>):</p>
+<pre><code class="bash hljs">
+$ celery -A <span class="hljs-built_in">test</span>_celery worker --loglevel=info
+
+</code></pre>
+<p>You will see something like this if Celery successfully connects to RabbitMQ:</p>
+<pre><code class="bash hljs">
+$ celery -A <span class="hljs-built_in">test</span>_celery worker --loglevel=info
+ -------------- celery@zhangmatoMacBook-Pro.local v3.1.23 (Cipater)
+---- **** ----- 
+--- * ***  * -- Darwin-15.4.0-x86_64-i386-64bit
+-- * - **** --- 
+- ** ---------- [config]
+- ** ---------- .&gt; app:         <span class="hljs-built_in">test</span>_celery:0x10d9b0d10
+- ** ---------- .&gt; transport:   amqp://jimmy:**@localhost:5672/jimmy_vhost
+- ** ---------- .&gt; results:     rpc://
+- *** --- * --- .&gt; concurrency: 4 (prefork)
+-- ******* ---- 
+--- ***** ----- [queues]
+ -------------- .&gt; celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . <span class="hljs-built_in">test</span>_celery.tasks.longtime_add
+
+[2016-04-24 22:41:20,297: INFO/MainProcess] Connected to amqp://jimmy:**@127.0.0.1:5672/jimmy_vhost
+[2016-04-24 22:41:20,310: INFO/MainProcess] mingle: searching <span class="hljs-keyword">for</span> neighbors
+[2016-04-24 22:41:21,321: INFO/MainProcess] mingle: all alone
+[2016-04-24 22:41:21,374: WARNING/MainProcess] celery@zhangmatoMacBook-Pro.local ready.
+
+</code></pre>
+<h3>Run Tasks</h3>
+<p>In another console, input the following (run in the parent folder of our project folder <strong>test_celery</strong>):</p>
+<pre><code class="bash hljs">
+$ python -m <span class="hljs-built_in">test</span>_celery.run_tasks
+
+</code></pre>
+<p>Now if you look at the Celery console, you will see that our worker received the task:</p>
+<pre><code class="bash hljs">
+[2016-04-24 22:59:16,508: INFO/MainProcess] Received task: <span class="hljs-built_in">test</span>_celery.tasks.longtime_add[25ba9c87-69a7-4383-b983-1cefdb32f8b3]
+[2016-04-24 22:59:16,508: WARNING/Worker-3] long time task begins
+[2016-04-24 22:59:31,510: WARNING/Worker-3] long time task finished
+[2016-04-24 22:59:31,512: INFO/MainProcess] Task <span class="hljs-built_in">test</span>_celery.tasks.longtime_add[25ba9c87-69a7-4383-b983-1cefdb32f8b3] succeeded <span class="hljs-keyword">in</span> 15.003732774s: 3
+
+</code></pre>
+<p>As you can see, when our Celery worker received a task, it printed out the task name with a task id (in the bracket):<br>
+<em>Received task: test_celery.tasks.longtime_add[7d942984-8ea6-4e4d-8097-225616f797d5]</em></p>
+<p>Below this line is two lines that were printed by our task <code>longtime_add</code>, with a time delay of 5 seconds:<br>
+<em>long time task begins</em><br>
+<em>long time task finished</em></p>
+<p>The last line shows that our task was finished in about 5 seconds and the task result is 3:<br>
+<em>Task test_celery.tasks.longtime_add[7d942984-8ea6-4e4d-8097-225616f797d5] succeeded in 5.025242167s: 3</em></p>
+<p>In the&nbsp;current console, you will see the following output:</p>
+<pre><code class="bash hljs">
+$ python -m <span class="hljs-built_in">test</span>_celery.run_tasks
+Task finished? False
+Task result: None
+Task finished? False
+Task result: None
+
+</code></pre>
+<p>This is the expected behavior. At first, our task was not ready, and 
+the result was None. After 10 seconds, our task has been finished and 
+the result is 3.</p>
+<h3>Monitor Celery in Real Time</h3>
+<p><a href="http://docs.celeryproject.org/en/latest/userguide/monitoring.html#flower-real-time-celery-web-monitor" target="_blank" rel="nofollow">Flower</a> is a real-time web-based monitor for Celery. Using Flower, you could easily monitor your task progress and history.</p>
+<p>We can use pip to install Flower:</p>
+<pre><code class="bash hljs">
+$ pip install flower
+
+</code></pre>
+<p>To start the Flower web console, we need to run the following command (run in the parent folder of our project folder <strong>test_celery</strong>):</p>
+<pre><code class="bash hljs">
+$ celery -A <span class="hljs-built_in">test</span>_celery flower
+
+</code></pre>
+<p>Flower will run a server with default port 5555, and you can access the web console at http://localhost:5555.</p>
+<p><a class="lightbox" href="https://tests4geeks.com/tutorials/wp-content/uploads/2016/04/screen_shot_9.png"><img class="alignnone size-medium wp-image-649" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/screen_shot_9-740x279.png" alt="screen_shot_9" width="740" height="279"></a></p>
+<h2>Conclusion</h2>
+<p>Celery is easy to set up when used with the RabbitMQ broker, and it 
+hides the complex details of RabbitMQ. You can find the full set code of
+ demo project above on&nbsp;<a href="https://github.com/jimmykobe1171/celery-demo/tree/master" target="_blank" rel="nofollow">Github</a>.</p>
+<p><em>Jimmy Zhang is a software developer experienced in backend 
+development with Python and Django. You could find more about him on his
+ website http://www.catharinegeek.com/ </em></p>
+<div class="mashsb_above_buttons"><h2>Like the article? Share it please!</h2>
+<p>It will REALLY help us to make <b>more content</b> here.</p></div>
+<span class="bctt-click-to-tweet"><span class="bctt-ctt-text"><a href="https://twitter.com/intent/tweet?text=Python%20Celery%20%26%20RabbitMQ%20Tutorial%20-%20Step%20by%20Step%20Guide%20with%20Demo%20and%20Source%20Code&amp;url=https://tests4geeks.com/python-celery-rabbitmq-tutorial/" target="_blank">Python Celery &amp; RabbitMQ Tutorial - Step by Step Guide with Demo and Source Code </a></span><a href="https://twitter.com/intent/tweet?text=Python%20Celery%20%26%20RabbitMQ%20Tutorial%20-%20Step%20by%20Step%20Guide%20with%20Demo%20and%20Source%20Code&amp;url=https://tests4geeks.com/python-celery-rabbitmq-tutorial/" target="_blank" class="bctt-ctt-btn">Click To Tweet</a></span>
+					</div><!-- .entry-content -->
+
+	</div><!-- .entry-container -->
+		<footer class="entry-meta clearfix">
+		<div class="up_arrow"></div>
+<div class="pull-left author-meta">
+	<img alt="" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/avatar.png" class="avatar avatar-55 photo" width="55" height="55">
+		<h4 class="bl_popover footer-author" data-placement="top" data-trigger="hover" data-title="Jia Zhang" data-content="" data-original-title="" title="">
+		Jia Zhang	</h4>
+</div>
+<div class="post-footer-like"><iframe src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/like.html" scrolling="no" style="border:none; overflow:hidden; width:110px; height:21px;" allowtransparency="true" frameborder="0"></iframe></div>	</footer><!-- .entry-meta -->
+	</article><!-- #post-531 -->
+
+
+
+
+										<div class="single-pagination box clearfix">							<span class="nav-previous" style="float:left;">
+								<a href="https://tests4geeks.com/angular-google-maps-tutorial/" rel="prev"><span><i class="icon-left-open"></i>Older</span><br><div class="post-title hidden-tablet hidden-phone">Angular Google Maps Tutorial: Demo, Examples</div></a>							</span>							<span class="nav-next" style="float:right;">
+								<a href="https://tests4geeks.com/ajax-in-rails/" rel="next"><span>Newer<i class="icon-right-open"></i></span><br><div class="post-title hidden-tablet hidden-phone">Using AJAX in a Ruby on Rails App</div></a>							</span>					</div>
+					
+					<div id="related-posts" class="row-fluid"><div class="span3 box related-standard"><div class="related-header"><a class="related-image" href="https://tests4geeks.com/cpp-interview-questions/" rel="bookmark"><img src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/c-plus-plus-interview-questions-194x150.jpg" class="attachment-small" alt="C++ Interview Questions" width="194" height="150"></a></div><div class="related-content"><h4><a href="https://tests4geeks.com/cpp-interview-questions/" rel="bookmark" title="10 Proven C++ Programming Questions to Ask on Interview">10 Proven C++ Programming Questions to Ask on Interview</a></h4>	    </div>
+	    <div class="related-footer">
+		    <i class="icon-clock"></i>&nbsp;May 25, 2017	    </div>
+	</div>
+    <div class="span3 box related-standard"><div class="related-header"><a class="related-image" href="https://tests4geeks.com/java-interview-questions/" rel="bookmark"><img src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/java-test1-194x150.jpg" class="attachment-small" alt="Java Test" width="194" height="150"></a></div><div class="related-content"><h4><a href="https://tests4geeks.com/java-interview-questions/" rel="bookmark" title="10 Java Programming Questions to Ask on Interview">10 Java Programming Questions to Ask on Interview</a></h4>	    </div>
+	    <div class="related-footer">
+		    <i class="icon-clock"></i>&nbsp;Apr 16, 2017	    </div>
+	</div>
+    <div class="span3 box related-standard"><div class="related-header"><a class="related-image" href="https://tests4geeks.com/oauth2-javascript-tutorial/" rel="bookmark"><img src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/logonoff3-194x128.gif" class="attachment-small" alt="logonoff" width="194" height="128"></a></div><div class="related-content"><h4><a href="https://tests4geeks.com/oauth2-javascript-tutorial/" rel="bookmark" title="OAuth2 JavaScript Tutorial">OAuth2 JavaScript Tutorial</a></h4>	    </div>
+	    <div class="related-footer">
+		    <i class="icon-clock"></i>&nbsp;May 25, 2016	    </div>
+	</div>
+    <div class="span3 box related-standard"><div class="related-header"><a class="related-image" href="https://tests4geeks.com/angular-2-tutorial/" rel="bookmark"><img src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/Recording-1-194x150.gif" class="attachment-small" alt="Recording #1" width="194" height="150"></a></div><div class="related-content"><h4><a href="https://tests4geeks.com/angular-2-tutorial/" rel="bookmark" title="Angular 2 Tutorial – Simple “Hello World” App Example">Angular 2 Tutorial – Simple “Hello World” App Example</a></h4>	    </div>
+	    <div class="related-footer">
+		    <i class="icon-clock"></i>&nbsp;May 19, 2016	    </div>
+	</div>
+    </div>    <div id="comments" class="comments-area">
+     
+                    <h3 class="comments-title">
+                <i class="icon-comment-empty"></i>&nbsp;
+                10 Comments            </h3>
+     
+            <ol class="commentlist">
+                		    <li class="comment even thread-even depth-1" id="li-comment-227">
+		        <article id="comment-227" class="comment">
+		            <div>
+		                <div class="comment-author">
+		                    <img alt="" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/avatar45.png" class="avatar avatar-45 photo avatar-default" width="45" height="45">
+									                    <cite class="commenter">Carmelo</cite>		                	<small class="muted">&nbsp;&nbsp;•&nbsp;&nbsp;<time class="timeago" datetime="2016-09-21T06:15:08+00:00" title="2016-09-21T06:15:08+00:00">10 months ago</time></small>		                </div><!-- .comment-author .vcard -->
+		                		            </div>
+		 
+		            <div class="comment-content"><p>I love your blog.. ery nice colors &amp; theme. Did yoou make this website yourself<br>
+or did you hire someone to ddo it for you? Plz respond as I’m looking to<br>
+construct my own blog and would like to find out where u got<br>
+this from. thanks a lot</p>
+</div>
+		 
+		            <div class="reply">
+		                <a rel="nofollow" class="comment-reply-link" href="https://tests4geeks.com/python-celery-rabbitmq-tutorial/?replytocom=227#respond" onclick='return addComment.moveForm( "comment-227", "227", "respond", "531" )' aria-label="Reply to Carmelo">Reply</a>		                		            </div><!-- .reply -->
+		        </article><!-- #comment-## -->
+		 
+		    </li><!-- #comment-## -->
+		    <li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-229">
+		        <article id="comment-229" class="comment">
+		            <div>
+		                <div class="comment-author">
+		                    <img alt="" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/avatar45.png" class="avatar avatar-45 photo avatar-default" width="45" height="45">
+									                    <cite class="commenter">Cazare Mamaia Particulari</cite>		                	<small class="muted">&nbsp;&nbsp;•&nbsp;&nbsp;<time class="timeago" datetime="2016-09-21T14:11:31+00:00" title="2016-09-21T14:11:31+00:00">10 months ago</time></small>		                </div><!-- .comment-author .vcard -->
+		                		            </div>
+		 
+		            <div class="comment-content"><p>Hurrah! At last I got a weblog from where I know how to truly get helpful facts concerning<br>
+my study and knowledge.</p>
+</div>
+		 
+		            <div class="reply">
+		                <a rel="nofollow" class="comment-reply-link" href="https://tests4geeks.com/python-celery-rabbitmq-tutorial/?replytocom=229#respond" onclick='return addComment.moveForm( "comment-229", "229", "respond", "531" )' aria-label="Reply to Cazare Mamaia Particulari">Reply</a>		                		            </div><!-- .reply -->
+		        </article><!-- #comment-## -->
+		 
+		    </li><!-- #comment-## -->
+		    <li class="comment even thread-even depth-1" id="li-comment-295">
+		        <article id="comment-295" class="comment">
+		            <div>
+		                <div class="comment-author">
+		                    <img alt="" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/avatar45.png" class="avatar avatar-45 photo avatar-default" width="45" height="45">
+									                    <cite class="commenter">John Sobanski</cite>		                	<small class="muted">&nbsp;&nbsp;•&nbsp;&nbsp;<time class="timeago" datetime="2016-10-20T14:07:22+00:00" title="2016-10-20T14:07:22+00:00">9 months ago</time></small>		                </div><!-- .comment-author .vcard -->
+		                		            </div>
+		 
+		            <div class="comment-content"><p>Great, clear HOWTO.  Thanks for writing.</p>
+</div>
+		 
+		            <div class="reply">
+		                <a rel="nofollow" class="comment-reply-link" href="https://tests4geeks.com/python-celery-rabbitmq-tutorial/?replytocom=295#respond" onclick='return addComment.moveForm( "comment-295", "295", "respond", "531" )' aria-label="Reply to John Sobanski">Reply</a>		                		            </div><!-- .reply -->
+		        </article><!-- #comment-## -->
+		 
+		    </li><!-- #comment-## -->
+		    <li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-508">
+		        <article id="comment-508" class="comment">
+		            <div>
+		                <div class="comment-author">
+		                    <img alt="" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/avatar45.png" class="avatar avatar-45 photo avatar-default" width="45" height="45">
+									                    <cite class="commenter">Kavin</cite>		                	<small class="muted">&nbsp;&nbsp;•&nbsp;&nbsp;<time class="timeago" datetime="2016-11-09T14:13:16+00:00" title="2016-11-09T14:13:16+00:00">8 months ago</time></small>		                </div><!-- .comment-author .vcard -->
+		                		            </div>
+		 
+		            <div class="comment-content"><p>I installed rabbitmq seperately in windows platform, followed as per your tutorial… but I am getting the following<br>
+Traceback</p>
+<p> ————– celery@WKC001335224 v4.0.0 (latentcall)<br>
+—- **** —–<br>
+— * ***  * — Windows-7-6.1.7601-SP1 2016-11-09 19:34:17<br>
+— * – **** —<br>
+– ** ———- [config]<br>
+– ** ———- .&gt; app:         assigner:0x352ce90<br>
+– ** ———- .&gt; transport:   amqp://kavin:**@localhost:5672//kavin_host<br>
+– ** ———- .&gt; results:     rpc://<br>
+– *** — * — .&gt; concurrency: 12 (prefork)<br>
+— ******* —- .&gt; task events: OFF (enable -E to monitor tasks in this worker)<br>
+— ***** —–<br>
+ ————– [queues]<br>
+                .&gt; celery           exchange=celery(direct) key=celery</p>
+<p>[2016-11-09 19:34:17,686: CRITICAL/MainProcess] Unrecoverable error: TypeError(‘must be integer, no<br>
+t _subprocess_handle’,)<br>
+Traceback (most recent call last):<br>
+  File “c:\users\murugk7\envs\celery_test\lib\site-packages\celery\worker\worker.py”, line 203, in sta<br>
+rt<br>
+    self.blueprint.start(self)<br>
+  File “c:\users\murugk7\envs\celery_test\lib\site-packages\celery\bootsteps.py”, line 119, in start<br>
+    step.start(parent)<br>
+  File “c:\users\murugk7\envs\celery_test\lib\site-packages\celery\bootsteps.py”, line 370, in start<br>
+    return self.obj.start()<br>
+  File “c:\users\murugk7\envs\celery_test\lib\site-packages\celery\concurrency\base.py”, line 131, in<br>
+start<br>
+    self.on_start()<br>
+  File “c:\users\murugk7\envs\celery_test\lib\site-packages\celery\concurrency\prefork.py”, line 112,<br>
+in on_start<br>
+    **self.options)<br>
+  File “c:\users\murugk7\envs\celery_test\lib\site-packages\billiard\pool.py”, line 1008, in __init__<br>
+    self._create_worker_process(i)<br>
+  File “c:\users\murugk7\envs\celery_test\lib\site-packages\billiard\pool.py”, line 1117, in _create_w<br>
+orker_process<br>
+    w.start()<br>
+  File “c:\users\murugk7\envs\celery_test\lib\site-packages\billiard\process.py”, line 122, in start<br>
+    self._popen = self._Popen(self)<br>
+  File “c:\users\murugk7\envs\celery_test\lib\site-packages\billiard\context.py”, line 383, in _Popen<br>
+    return Popen(process_obj)<br>
+  File “c:\users\murugk7\envs\celery_test\lib\site-packages\billiard\popen_spawn_win32.py”, line 64, i<br>
+n __init__<br>
+    _winapi.CloseHandle(ht)<br>
+TypeError: must be integer, not _subprocess_handle</p>
+<p>(celery_test) C:\kavin\Assigner\assigner&gt;Traceback (most recent call last):<br>
+  File “”, line 1, in<br>
+  File “c:\users\murugk7\envs\celery_test\lib\site-packages\billiard\spawn.py”, line 159, in spawn_mai<br>
+n<br>
+    new_handle = steal_handle(parent_pid, pipe_handle)<br>
+  File “c:\users\murugk7\envs\celery_test\lib\site-packages\billiard\reduction.py”, line 121, in steal<br>
+_handle<br>
+    _winapi.PROCESS_DUP_HANDLE, False, source_pid)<br>
+WindowsError: [Error 87] The parameter is incorrect</p>
+<p>Please help me to clear this</p>
+</div>
+		 
+		            <div class="reply">
+		                <a rel="nofollow" class="comment-reply-link" href="https://tests4geeks.com/python-celery-rabbitmq-tutorial/?replytocom=508#respond" onclick='return addComment.moveForm( "comment-508", "508", "respond", "531" )' aria-label="Reply to Kavin">Reply</a>		                		            </div><!-- .reply -->
+		        </article><!-- #comment-## -->
+		 
+		    <ul class="children">
+		    <li class="comment even depth-2" id="li-comment-509">
+		        <article id="comment-509" class="comment">
+		            <div>
+		                <div class="comment-author">
+		                    <img alt="" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/avatar45.png" class="avatar avatar-45 photo avatar-default" width="45" height="45">
+									                    <cite class="commenter">Kavin</cite>		                	<small class="muted">&nbsp;&nbsp;•&nbsp;&nbsp;<time class="timeago" datetime="2016-11-09T14:17:13+00:00" title="2016-11-09T14:17:13+00:00">8 months ago</time></small>		                </div><!-- .comment-author .vcard -->
+		                		            </div>
+		 
+		            <div class="comment-content"><p>I am getting the above Traceback when I am executing the command: </p>
+<p>“celery -A assigner worker”</p>
+<p>where assigner is my project name</p>
+</div>
+		 
+		            <div class="reply">
+		                <a rel="nofollow" class="comment-reply-link" href="https://tests4geeks.com/python-celery-rabbitmq-tutorial/?replytocom=509#respond" onclick='return addComment.moveForm( "comment-509", "509", "respond", "531" )' aria-label="Reply to Kavin">Reply</a>		                		            </div><!-- .reply -->
+		        </article><!-- #comment-## -->
+		 
+		    <ul class="children">
+		    <li class="comment odd alt depth-3" id="li-comment-642">
+		        <article id="comment-642" class="comment">
+		            <div>
+		                <div class="comment-author">
+		                    <img alt="" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/avatar45.png" class="avatar avatar-45 photo avatar-default" width="45" height="45">
+									                    <cite class="commenter">Ron</cite>		                	<small class="muted">&nbsp;&nbsp;•&nbsp;&nbsp;<time class="timeago" datetime="2016-11-24T13:32:06+00:00" title="2016-11-24T13:32:06+00:00">8 months ago</time></small>		                </div><!-- .comment-author .vcard -->
+		                		            </div>
+		 
+		            <div class="comment-content"><p>I get the same error as Kavin</p>
+</div>
+		 
+		            <div class="reply">
+		                <a rel="nofollow" class="comment-reply-link" href="https://tests4geeks.com/python-celery-rabbitmq-tutorial/?replytocom=642#respond" onclick='return addComment.moveForm( "comment-642", "642", "respond", "531" )' aria-label="Reply to Ron">Reply</a>		                		            </div><!-- .reply -->
+		        </article><!-- #comment-## -->
+		 
+		    <ul class="children">
+		    <li class="comment even depth-4" id="li-comment-725">
+		        <article id="comment-725" class="comment">
+		            <div>
+		                <div class="comment-author">
+		                    <img alt="" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/avatar45.png" class="avatar avatar-45 photo avatar-default" width="45" height="45">
+									                    <cite class="commenter">gree2</cite>		                	<small class="muted">&nbsp;&nbsp;•&nbsp;&nbsp;<time class="timeago" datetime="2016-12-11T03:28:14+00:00" title="2016-12-11T03:28:14+00:00">7 months ago</time></small>		                </div><!-- .comment-author .vcard -->
+		                		            </div>
+		 
+		            <div class="comment-content"><p><a href="http://docs.celeryproject.org/en/latest/whatsnew-4.0.html#removed-features" rel="nofollow">http://docs.celeryproject.org/en/latest/whatsnew-4.0.html#removed-features</a><br>
+Microsoft Windows is no longer supported.</p>
+</div>
+		 
+		            <div class="reply">
+		                <a rel="nofollow" class="comment-reply-link" href="https://tests4geeks.com/python-celery-rabbitmq-tutorial/?replytocom=725#respond" onclick='return addComment.moveForm( "comment-725", "725", "respond", "531" )' aria-label="Reply to gree2">Reply</a>		                		            </div><!-- .reply -->
+		        </article><!-- #comment-## -->
+		 
+		    </li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+		    <li class="comment odd alt thread-even depth-1" id="li-comment-1150">
+		        <article id="comment-1150" class="comment">
+		            <div>
+		                <div class="comment-author">
+		                    <img alt="" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/avatar45.png" class="avatar avatar-45 photo avatar-default" width="45" height="45">
+									                    <cite class="commenter">Thomas</cite>		                	<small class="muted">&nbsp;&nbsp;•&nbsp;&nbsp;<time class="timeago" datetime="2017-02-01T10:23:24+00:00" title="2017-02-01T10:23:24+00:00">5 months ago</time></small>		                </div><!-- .comment-author .vcard -->
+		                		            </div>
+		 
+		            <div class="comment-content"><p>Hi,</p>
+<p>everything works perfectly on CentOS7 as long as I do not start “flower”.<br>
+When I start celery with the flower argument no tasks are created and nothing is shown in the flower UI. </p>
+<p>Python just says:<br>
+Task finished?  False<br>
+Task result:  None<br>
+Task finished?  False<br>
+Task result:  None</p>
+<p>and celery:<br>
+celery -A test_celery flower<br>
+[I 170201 10:07:01 command:136] Visit me at <a href="http://localhost:5555/" rel="nofollow">http://localhost:5555</a><br>
+[I 170201 10:07:01 command:141] Broker: amqp://tju:**@localhost:5672/tju_vhost<br>
+[I 170201 10:07:01 command:144] Registered tasks:<br>
+    [u’celery.accumulate’,<br>
+     u’celery.backend_cleanup’,<br>
+     u’celery.chain’,<br>
+     u’celery.chord’,<br>
+     u’celery.chord_unlock’,<br>
+     u’celery.chunks’,<br>
+     u’celery.group’,<br>
+     u’celery.map’,<br>
+     u’celery.starmap’,<br>
+     u’test_celery.tasks.longtime_add’]<br>
+[I 170201 10:07:01 mixins:224] Connected to amqp://tju:**@127.0.0.1:5672/tju_vhost<br>
+[W 170201 10:07:03 control:44] ‘stats’ inspect method failed<br>
+[W 170201 10:07:03 control:44] ‘active_queues’ inspect method failed<br>
+[W 170201 10:07:03 control:44] ‘registered’ inspect method failed<br>
+[W 170201 10:07:03 control:44] ‘scheduled’ inspect method failed<br>
+[W 170201 10:07:03 control:44] ‘active’ inspect method failed<br>
+[W 170201 10:07:03 control:44] ‘reserved’ inspect method failed<br>
+[W 170201 10:07:03 control:44] ‘revoked’ inspect method failed<br>
+[W 170201 10:07:03 control:44] ‘conf’ inspect method failed</p>
+<p>As soon as I remove the “flower” argument the tasks which I put in earlier are processed. </p>
+<p>so not sure why this happens, but it seems it has something to do with this flower ui</p>
+</div>
+		 
+		            <div class="reply">
+		                <a rel="nofollow" class="comment-reply-link" href="https://tests4geeks.com/python-celery-rabbitmq-tutorial/?replytocom=1150#respond" onclick='return addComment.moveForm( "comment-1150", "1150", "respond", "531" )' aria-label="Reply to Thomas">Reply</a>		                		            </div><!-- .reply -->
+		        </article><!-- #comment-## -->
+		 
+		    <ul class="children">
+		    <li class="comment even depth-2" id="li-comment-1151">
+		        <article id="comment-1151" class="comment">
+		            <div>
+		                <div class="comment-author">
+		                    <img alt="" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/avatar45.png" class="avatar avatar-45 photo avatar-default" width="45" height="45">
+									                    <cite class="commenter">Thomas</cite>		                	<small class="muted">&nbsp;&nbsp;•&nbsp;&nbsp;<time class="timeago" datetime="2017-02-01T10:38:35+00:00" title="2017-02-01T10:38:35+00:00">5 months ago</time></small>		                </div><!-- .comment-author .vcard -->
+		                		            </div>
+		 
+		            <div class="comment-content"><p>oh please ignore … I just realized that I need to run the flow command in addition to the previous celery command.</p>
+</div>
+		 
+		            <div class="reply">
+		                <a rel="nofollow" class="comment-reply-link" href="https://tests4geeks.com/python-celery-rabbitmq-tutorial/?replytocom=1151#respond" onclick='return addComment.moveForm( "comment-1151", "1151", "respond", "531" )' aria-label="Reply to Thomas">Reply</a>		                		            </div><!-- .reply -->
+		        </article><!-- #comment-## -->
+		 
+		    </li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+		    <li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-3056">
+		        <article id="comment-3056" class="comment">
+		            <div>
+		                <div class="comment-author">
+		                    <img alt="" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/avatar45.png" class="avatar avatar-45 photo avatar-default" width="45" height="45">
+									                    <cite class="commenter">Jose</cite>		                	<small class="muted">&nbsp;&nbsp;•&nbsp;&nbsp;<time class="timeago" datetime="2017-06-13T09:20:54+00:00" title="2017-06-13T09:20:54+00:00">25 days ago</time></small>		                </div><!-- .comment-author .vcard -->
+		                		            </div>
+		 
+		            <div class="comment-content"><p>Now i need to set a task as cron job, how to do it</p>
+</div>
+		 
+		            <div class="reply">
+		                <a rel="nofollow" class="comment-reply-link" href="https://tests4geeks.com/python-celery-rabbitmq-tutorial/?replytocom=3056#respond" onclick='return addComment.moveForm( "comment-3056", "3056", "respond", "531" )' aria-label="Reply to Jose">Reply</a>		                		            </div><!-- .reply -->
+		        </article><!-- #comment-## -->
+		 
+		    </li><!-- #comment-## -->
+            </ol><!-- .commentlist -->
+     
+                         
+
+        
+     
+        						<div id="respond" class="comment-respond">
+				<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="https://tests4geeks.com/python-celery-rabbitmq-tutorial/#respond" style="display:none;">Cancel reply</a></small></h3>
+									<form action="https://tests4geeks.com/blog/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+																			<p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> Required fields are marked <span class="required">*</span></p>							<p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" size="30" aria-required="true" required="required" type="text"></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" size="30" aria-describedby="email-notes" aria-required="true" required="required" type="text"></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" size="30" type="text"></p>
+												<p class="comment-form-comment"><label for="comment">Comment</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-required="true" required="required"></textarea></p>						
+						<p class="form-submit"><input name="submit" id="submit" class="submit" value="Post Comment" type="submit"> <input name="comment_post_ID" value="531" id="comment_post_ID" type="hidden">
+<input name="comment_parent" id="comment_parent" value="0" type="hidden">
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" value="5ce9980be5" type="hidden"></p><p style="display: none;"></p>					<input id="ak_js" name="ak_js" value="1499466969620" type="hidden"></form>
+							</div><!-- #respond -->
+			
+    </div><!-- #comments .comments-area -->
+ 
+		</div><!-- #content .site-content -->
+
+				<aside id="side-bar" class="span3">
+				<div id="text-3" class="box widget_text"><h3 class="widget-head">Programming Tests</h3>			<div class="textwidget"><div class="widget_categories">
+<ul>
+<li class="cat-item"><a href="https://tests4geeks.com/javascript">JavaScript</a></li>
+<li class="cat-item"><a href="https://tests4geeks.com/c-plus-plus">C++</a></li>
+<li class="cat-item"><a href="https://tests4geeks.com/java">Java</a></li>
+<li class="cat-item"><a href="https://tests4geeks.com/c-sharp">C#</a></li>
+<li class="cat-item"><a href="https://tests4geeks.com/test/asp-net-mvc-c-sharp">ASP.NET MVC &amp; C#</a></li>	
+<li class="cat-item"><a href="https://tests4geeks.com/php">PHP</a></li>
+<li class="cat-item"><a href="https://tests4geeks.com/html-css-javascript">HTML &amp; CSS &amp; JavaScript</a></li>
+<li class="cat-item"><a href="https://tests4geeks.com/test/python">Python</a></li>
+<li class="cat-item"><a href="https://tests4geeks.com/ruby-on-rails">Ruby on Rails</a></li>
+<li class="cat-item"><a href="https://tests4geeks.com/test/ios-objective-c">iOS &amp; Objective-C</a></li>	
+</ul>
+</div></div>
+		</div><div id="categories-2" class="box widget_categories"><h3 class="widget-head">Categories</h3>		<ul>
+
+	<li class="cat-item cat-item-54"><a href="https://tests4geeks.com/programming-interview-questions/">Programming Interview Questions</a>
+</li>
+	<li class="cat-item cat-item-51"><a href="https://tests4geeks.com/tutorials/">Programming Tutorials</a>
+</li>
+		</ul>
+</div>
+<!-- WordPress Popular Posts Plugin v3.3.4 [W] [all] [views] [custom] -->
+<div id="wpp-2" class="box popular-posts">
+<h3 class="widget-head">Popular Posts</h3>
+<ul><li><a href="https://tests4geeks.com/java-interview-questions/">10 Essential Java Interview Questions</a></li><li><a href="https://tests4geeks.com/cpp-interview-questions/">10 Proven C++ Interview Questions</a></li>
+<li><a href="https://tests4geeks.com/single-page-application-using-angularjs-tutorial/">Single Page Application using AngularJs Tutorial</a></li>
+<li><a href="https://tests4geeks.com/build-angular-1-5-component-angularjs-tutorial/">Build an Angular 1.5 component – An AngularJS tutorial</a></li>
+<li><a href="https://tests4geeks.com/angular-2-tutorial/">Angular 2 Tutorial – Simple “Hello World” App Example</a></li>
+<li><a href="https://tests4geeks.com/angular-google-maps-tutorial/">Angular Google Maps Tutorial: Demo, Examples</a></li>
+<li><a href="https://tests4geeks.com/spring-data-boot-mongodb-example/">Spring Data, Spring Boot, MongoDB (Example &amp; Tutorial)</a></li>
+
+</ul>
+</div>
+<!-- End WordPress Popular Posts Plugin v3.3.4 -->
+		</aside>
+					
+	</div><!-- #primary .content-area -->
+	</div><!-- #main .site-main -->
+	<footer id="colophon" class="site-footer light_theme" role="contentinfo">
+				<div class="container">
+						<div class="row-fluid" id="footer-body">
+							</div>
+					</div><!-- .site-info -->
+				<div class="row-fluid" id="footer-bottom">
+			Copyright © 2017 · Tests4Geeks		</div>	
+			</footer><!-- #colophon .site-footer -->
+</div><!-- #page -->
+<link rel="stylesheet" href="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/agate.css">
+<script src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script><script type="text/javascript" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/form.js"></script>
+<script type="text/javascript" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/jquery_003.js"></script>
+<script type="text/javascript" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/jquery-migrate.js"></script>
+<script type="text/javascript" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/jquery-ui.js"></script>
+<script type="text/javascript" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/jquery_004.js"></script>
+<script type="text/javascript" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/jquery.js"></script>
+<script type="text/javascript" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/jquery_002.js"></script>
+<script type="text/javascript" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/bootstrap.js"></script>
+<script type="text/javascript" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/jquery_005.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var blu = 
+{"site_url":"https:\/\/tests4geeks.com\/blog","ajaxurl":"https:\/\/tests4geeks.com\/blog\/wp-admin\/admin-ajax.php","fb_comments":"false","lazy_load":"false","locale":{"email_input":"Search...","comment":"Comment","comments":"Comments","no_comments":"No
+ Comments","no_email_provided":"No email 
+provided!","thank_you_for_subscribing":"Thank you for subscribing!"}};
+/* ]]> */
+</script>
+<script type="text/javascript" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/theme.js"></script>
+<script type="text/javascript" src="Python%20Celery%20&amp;%20RabbitMQ%20Tutorial%20%28Demo,%20Source%20Code%29%20-%20Tests4Geeks_files/comment-reply.js"></script>
+
+
+
+</body></html>
+<!-- Cache Enabler by KeyCDN @ 23.06.2017 12:37:15 (html) -->

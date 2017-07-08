@@ -1,0 +1,633 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html id="top" xmlns="http://www.w3.org/1999/xhtml" xmlns:jspwiki="http://jspwiki.apache.org"><head>
+  <title>
+    Dsawiki: Debug Django in PyDev
+  </title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" media="screen, projection, print" type="text/css" id="main-stylesheet" href="Dsawiki:%20Debug%20Django%20in%20PyDev_files/jspwiki.css">
+
+<link rel="stylesheet" type="text/css" media="print" href="Dsawiki:%20Debug%20Django%20in%20PyDev_files/jspwiki_print.css">
+<!-- INCLUDERESOURCES (stylesheet) -->
+
+<!-- INCLUDERESOURCES (inlinecss) -->
+
+
+
+<noscript>
+<style type="text/css">
+#hiddenmorepopup { display:block; }
+</style>
+</noscript>
+
+
+<script type="text/javascript" src="Dsawiki:%20Debug%20Django%20in%20PyDev_files/mootools.js"></script>
+<script type="text/javascript" src="Dsawiki:%20Debug%20Django%20in%20PyDev_files/jspwiki-common.js"></script>
+<!-- INCLUDERESOURCES (script) -->
+
+
+
+
+
+<meta name="wikiContext" content="view">
+<meta name="wikiBaseUrl" content="http://arcoleo.org:8080/dsawiki/">
+<meta name="wikiPageUrl" content="/dsawiki/Wiki.jsp?page=%23%24%25">
+<meta name="wikiEditUrl" content="/dsawiki/Edit.jsp?page=Debug%20Django%20in%20PyDev">
+<meta name="wikiJsonUrl" content="/dsawiki/ajax">
+<meta name="wikiPageName" content="Debug Django in PyDev">
+<meta name="wikiUserName" content="51.37.179.218">
+<meta name="wikiTemplateUrl" content="/dsawiki/templates/default/">
+<meta name="wikiApplicationName" content="Dsawiki">
+
+<script type="text/javascript">//<![CDATA[
+/* Localized javascript strings: LocalizedStrings[] */
+var LocalizedStrings = {
+"javascript.sbox.clone.suffix":"-New",
+"javascript.sbox.clone":"Clone this page",
+"javascript.slimbox.remoteRequest":"Remote Request {0} of {1}",
+"javascript.filter.all":"( All )",
+"javascript.group.validName":"Please provide a valid name for the new Group",
+"javascript.slimbox.next":"Next&raquo;",
+"javascript.slimbox.previous":"&laquo;Previous",
+"javascript.favs.show":"Click to show Favorites",
+"javascript.slimbox.close":"Close &#215;",
+"javascript.prefs.areyousure":"Without clicking the Save User Preferences button, your changes will be lost. Are you sure you want to exit this page?",
+"javascript.edit.findandreplace.nomatch":"No match found!",
+"javascript.tip.default.title":"More...",
+"javascript.sbox.create":"Create {0}",
+"javascript.collapse":"Click to collapse",
+"javascript.slimbox.size":"Size: {0}px x {1}px",
+"javascript.slimbox.error":"<h2>Error</h2>There was a problem with your request.<br />Please try again",
+"javascript.sort.ascending":"Ascending order. Click to reverse sort order",
+"javascript.sbox.clearrecent":"Clear Recent Searches",
+"javascript.sectionediting.label":"Section Overview",
+"javascript.edit.areyousure":"Without clicking the Save button, your changes will be lost. Are you sure you want to exit this page?",
+"javascript.edit.toolbar.makeSelection":"Please make first a selection.",
+"javascript.category.title":"Click to show category [{0}] ...",
+"javascript.slimbox.info":"Image {0} of {1}",
+"javascript.slimbox.directLink":"Direct Link to the target",
+"javascript.filter.hint":"Enter filter pattern (esc to clear)",
+"javascript.favs.hide":"Click to hide Favorites",
+"javascript.slimbox.btn":"Click to view {0}",
+"javascript.sort.click":"Click to sort",
+"javascript.edit.startOfPage":"( Start of page )",
+"javascript.quick.edit":"Edit",
+"javascript.slimbox.caption":"Direct link to {0}",
+"javascript.edit.resize":"Drag to resize the text area",
+"javascript.edit.allsections":"( All )",
+"javascript.sort.descending":"Descending order. Click to reverse sort order",
+"javascript.slimbox.close.title":"Close [Esc]",
+"javascript.expand":"Click to expand"
+};
+
+
+/* INCLUDERESOURCES (jsfunction) */
+
+//]]></script>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="search" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=Search" title="Search Dsawiki">
+<link rel="help" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=TextFormattingRules" title="Help">
+
+ <link rel="start" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=Main" title="Front page">
+<link rel="alternate stylesheet" type="text/css" href="Dsawiki:%20Debug%20Django%20in%20PyDev_files/jspwiki_print.css" title="Print friendly">
+<link rel="alternate stylesheet" type="text/css" href="Dsawiki:%20Debug%20Django%20in%20PyDev_files/jspwiki.css" title="Standard">
+<link rel="shortcut icon" type="image/x-icon" href="http://arcoleo.org/dsawiki/images/favicon.ico">
+
+<link rel="icon" type="image/x-icon" href="http://arcoleo.org/dsawiki/images/favicon.ico">
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+</head>
+
+<body class="view">
+
+<div id="wikibody" class="fav-left">
+ 
+  
+
+
+
+
+
+
+
+
+<div id="header">
+
+  <div class="titlebox"></div>
+
+  <div class="applicationlogo"> 
+    <a href="http://arcoleo.org/dsawiki/Wiki.jsp?page=Main" title="Go to home page Main ">Home</a>
+  </div>
+
+  <div class="companylogo"></div>
+
+  
+
+
+
+
+
+
+
+
+<div class="userbox">
+
+  
+    <span class="username anonymous">
+      G’day (anonymous guest)
+    </span>
+  
+  
+  
+
+  
+  
+  
+    
+      <a href="http://arcoleo.org/dsawiki/Login.jsp?redirect=Debug+Django+in+PyDev" class="action login" title="Log in or Register as new user">Log in</a>
+    
+  
+  
+  
+  
+
+  
+  
+    <a href="http://arcoleo.org/dsawiki/UserPreferences.jsp?redirect=Debug+Django+in+PyDev" class="action prefs" accesskey="p" title="Manage your preferences [ p ]">User Preferences
+    </a>
+  
+  
+
+  <div class="clearbox"></div>
+
+</div>
+
+  <div class="pagename">Debug Django in PyDev</div>
+
+  <div class="searchbox">
+
+
+
+
+
+
+
+
+<form action="/dsawiki/Search.jsp" class="wikiform" id="searchForm" accept-charset="UTF-8">
+
+  <div style="position:relative">
+  <input onblur="if( this.value == '' ) { this.value = this.defaultValue }; return true; " onfocus="if( this.value == this.defaultValue ) { this.value = ''}; return true; " value="To search, type ahead" name="query" id="query" size="20" accesskey="f" autocomplete="off" type="text">
+  <button type="submit" name="searchSubmit" id="searchSubmit" value="Go!" title="Go!"></button>
+  </div>
+  <div id="searchboxMenu" style="visibility: hidden; opacity: 0;" visibility="visible">
+    <div id="searchTools">
+      <a href="#" id="quickView" class="action" onclick="SearchBox.navigate( '/dsawiki/Wiki.jsp?page=__PAGEHERE__','View the selected page' );" title="View the selected page">view</a>
+      <a href="#" id="quickEdit" class="action" onclick="SearchBox.navigate( '/dsawiki/Edit.jsp?page=__PAGEHERE__','Edit the selected page' );" title="Edit the selected page">edit</a>
+      <a href="#" id="quickClone" class="action" onclick="return SearchBox.navigate( '/dsawiki/Edit.jsp?page=__PAGEHERE__', 'Clone the selected page', true );" title="Clone the selected page">clone</a>
+      <a href="#" id="advancedSearch" class="action" onclick="SearchBox.navigate( 'http://arcoleo.org:8080/dsawiki/Search.jsp?query=__PAGEHERE__','Debug Django in PyDev' )" title="Advanced Search [ f ]">find</a>
+    </div>
+    <div id="searchResult">
+	  Quick search
+      <span id="searchTarget">(type ahead)</span>
+      <span id="searchSpin" class="spin" style="position:absolute;display:none;"></span>
+	  <div id="searchOutput"></div>
+    </div>
+    <div id="recentSearches" style="display:none;">
+      Recent Searches
+      <span><a href="#" id="recentClear">(Clear)</a></span>
+    </div>
+  </div>
+
+</form></div>
+
+  <div class="breadcrumbs">Your trail:&nbsp;</div>
+
+</div>
+
+  <div id="content">
+
+    <div id="page">
+      
+
+
+
+
+
+
+
+<div id="actionsTop" class="pageactions"> 
+  <ul>
+
+    
+    
+    
+
+    
+    <li id="morebutton" href="#">
+      <a href="http://arcoleo.org/dsawiki/Wiki.jsp?page=MoreMenu" class="action more">More...</a>
+    <ul id="morepopup" style="visibility: hidden; opacity: 0;">
+     
+       	
+     
+       
+     
+    
+       
+     
+       <li>
+       
+       <a class="action rawpage wikipage" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=Debug%20Django%20in%20PyDev&amp;skin=raw" title="View Page Source">View Page Source
+       </a>
+       
+       
+       </li>
+      
+        
+  
+      
+      
+      
+
+      
+	  <li class="separator">
+        <div id="moremenu"></div>
+      </li>
+  </ul></li>
+
+  </ul>
+</div>
+
+      
+
+
+
+
+
+
+
+
+
+
+<div class="tabmenu">
+
+  
+
+  
+
+  
+  
+  
+    
+  
+    
+  
+
+
+
+  <a class="activetab" id="menu-pagecontent" accesskey="v"><span class="accesskey">V</span>iew</a>
+
+  
+
+  
+  <a id="menu-attach" accesskey="a"><span class="accesskey">A</span>ttach</a>
+  
+    
+  <a id="menu-info" href="http://arcoleo.org/dsawiki/PageInfo.jsp?page=Debug%20Django%20in%20PyDev" accesskey="i"><span class="accesskey">I</span>nfo</a>
+    
+  
+
+</div>
+<div class="tabs">
+
+  <div id="pagecontent">
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p></p><div class="toc">
+<div class="collapsebox">
+<h4 id="section-TOC" class="collapsetitle"><div class="collapseOpen" title="Click to collapse">-</div>Table of Contents</h4><div class="collapsebody" style="overflow: hidden;">
+<ul>
+<li class="toclevel-1"><a class="wikipage" href="#section-Debug+Django+in+PyDev-CreateDebugConfiguration">Create Debug Configuration</a></li>
+<li class="toclevel-1"><a class="wikipage" href="#section-Debug+Django+in+PyDev-ConfigureNewConfiguration">Configure new configuration</a></li>
+<li class="toclevel-2"><a class="wikipage" href="#section-Debug+Django+in+PyDev-MainTab">Main Tab</a></li>
+<li class="toclevel-2"><a class="wikipage" href="#section-Debug+Django+in+PyDev-ArgumentsTab">Arguments Tab</a></li>
+<li class="toclevel-1"><a class="wikipage" href="#section-Debug+Django+in+PyDev-Running">Running</a></li>
+</ul>
+</div></div>
+</div>
+
+<p></p><h2 id="section-Debug+Django+in+PyDev-CreateDebugConfiguration"> Create Debug Configuration<a class="hashlink" href="#section-Debug+Django+in+PyDev-CreateDebugConfiguration">#</a></h2>
+<ol><li>Make sure you are running Eclipse in Pydev mode
+</li><li>Select Run -&gt; Debug Configurations ...
+</li><li>"Python Run" should be selected in the "Debug Configurations" pop-up
+</li><li>Click the left-most icon on the upper left that says "New launch configuration" when you hover over it
+</li></ol><h2 id="section-Debug+Django+in+PyDev-ConfigureNewConfiguration"> Configure new configuration<a class="hashlink" href="#section-Debug+Django+in+PyDev-ConfigureNewConfiguration">#</a></h2>
+<h3 id="section-Debug+Django+in+PyDev-MainTab"> Main Tab<a class="hashlink" href="#section-Debug+Django+in+PyDev-MainTab">#</a></h3>
+<ol><li>"Project" should have name of your current Pydev project
+</li><li>"Main Module" should have <tt> ${workspace_loc:PROJECT_NAME/path/to/manage.py} </tt> or something similar (including the manage.py)
+</li><li>PYTHONPATH should have the contents of your <tt>site-packages</tt> and your project folder
+</li></ol><h3 id="section-Debug+Django+in+PyDev-ArgumentsTab"> Arguments Tab<a class="hashlink" href="#section-Debug+Django+in+PyDev-ArgumentsTab">#</a></h3>
+<ol><li>"Program arguments" should have <tt> runserver --noreload PORT_NUMBER </tt>
+</li><li>"Working directory" should have <tt> ${workspace_loc:PROJECT_NAME/path/to/manage.py} </tt> *without* the manage.py
+</li></ol><h2 id="section-Debug+Django+in+PyDev-Running"> Running<a class="hashlink" href="#section-Debug+Django+in+PyDev-Running">#</a></h2>
+<p>Now you can click on the arrow next to the debug icon and select the 
+configuration you just made.  You can also select Run -&gt; Debug As and
+ select the configuration you just made.
+</p>
+<hr>
+<a class="wikipage" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.IDE.Eclipse">Eclipse</a> - <a class="wikipage" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Lang.Python.Django">Django</a>
+
+
+
+
+
+
+
+        
+  </div>
+
+
+  
+
+  
+  <div id="attach" class="hidetab">
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="addattachment">
+<h3>Add new attachment</h3>
+
+
+<div class="formhelp">Only authorized users are allowed to upload new attachments.</div>
+
+</div>
+
+
+
+  </div>
+
+  
+    
+  <div id="info" class="hidetab">
+
+  </div>
+
+    
+  
+
+<div style="clear:both;"></div>
+</div>
+
+      
+
+
+
+
+
+
+
+
+
+<div id="actionsBottom" class="pageactions"> 
+    
+
+    <a href="#top" class="action quick2top" title="Go to top">«</a>
+
+    
+       This page (revision-) was last changed on <a href="http://arcoleo.org/dsawiki/Diff.jsp?page=Debug%20Django%20in%20PyDev&amp;r1=-1&amp;r2=1">14-Oct-2016 18:36</a> by <a class="wikipage" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=David%20Arcoleo">David Arcoleo</a>
+    
+
+    
+
+   
+
+  
+
+   
+</div>
+
+    </div>
+
+    
+
+
+
+
+
+
+
+
+<div id="favorites">
+
+  
+
+
+
+
+
+
+
+
+<div class="userbox">
+
+  
+    <span class="username anonymous">
+      G’day (anonymous guest)
+    </span>
+  
+  
+  
+
+  
+  
+  
+    
+      <a href="http://arcoleo.org/dsawiki/Login.jsp?redirect=Debug+Django+in+PyDev" class="action login" title="Log in or Register as new user">Log in</a>
+    
+  
+  
+  
+  
+
+  
+  
+    <a href="http://arcoleo.org/dsawiki/UserPreferences.jsp?redirect=Debug+Django+in+PyDev" class="action prefs" accesskey="p" title="Manage your preferences [ p ]">User Preferences
+    </a>
+  
+  
+
+  <div class="clearbox"></div>
+
+</div>
+  
+  <div id="hiddenmorepopup">
+  
+  </div>
+  
+  
+
+  
+
+  
+
+  
+  <div class="leftmenu">
+    <p><b><a class="wikipage" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=Main">Main</a></b>
+</p><ul><li><a class="wikipage" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=Login">Login</a>
+</li><li><a class="wikipage" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=RecentChanges">RecentChanges</a>
+</li><li>Administrative
+<ul><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryFixme">Fixme!</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryDelete">Delete!</a>
+</li></ul></li></ul><p><b><a class="wikipage" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryCategory">All Categories</a></b>
+</p>
+<p><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing">Computing</a>
+</p>
+<ul><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.BSD">BSD</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.DB">DB</a>
+<ul><li>(<a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.DB.NoSQL">No</a>)<a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.DB.SQL">SQL</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.DB.IR">IR</a>
+</li></ul></li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.IDE">IDE</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Imaging">Imaging</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Lang">Languages</a>
+<ul><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Lang.C">C/C++</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Lang.Java">Java</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Lang.Python">Python</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Lang.Ruby">Ruby</a>
+</li></ul></li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Linux">Linux</a> / <a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Linux.Shell">Shell</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Logging">Logging</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Mac">Mac</a> / <a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Mac.Shell">Shell</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Media">Media</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Networking">Networking</a>
+<ul><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Networking.Messaging">Messaging</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Networking.SSH">SSH</a>
+</li></ul></li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Performance">Performance</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.SCM">SCM</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Shell">Shell</a> / <a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Shell.TerminalMultiplexer">TmMx</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Web">Web</a> / <a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryComputing.Web.JS">JS</a>
+</li></ul><p><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryFood">Food</a><br>
+<a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryGeneral">General</a><br>
+<a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryGeographic">Geographic</a><br>
+<a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryRecreation">Recreation</a>
+</p>
+<ul><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryRecreation.Books">Books</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryRecreation.Education">Education</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryRecreation.Electronics">Electronics</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryRecreation.Events">Events</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryRecreation.Motorcycles">Motorcycles</a>
+</li><li><a class="interwiki" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=CategoryRecreation.Outdoors">Outdoors</a>
+</li></ul><hr>
+
+    
+  </div>
+  
+  <div class="leftmenufooter">
+    <br>
+<a class="wikipage" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=PageIndex">Index</a> <br>
+<a class="wikipage" href="http://arcoleo.org/dsawiki/Wiki.jsp?page=About">About</a>
+
+    
+  </div>
+
+  
+
+  
+  
+  <div class="wikiversion">JSPWiki v2.10.2
+  <span class="rssfeed">
+    
+  </span>
+  </div>  
+  
+</div>
+
+	<div class="clearbox"></div>
+  </div>
+
+  
+
+
+
+
+
+
+
+ 
+<div id="footer">
+
+  <div class="applicationlogo"> 
+    <a href="http://arcoleo.org/dsawiki/Wiki.jsp?page=Main" title="Go to home page Main ">Home</a>
+  </div>
+
+  <div class="companylogo"></div>
+
+  <div class="copyright"></div>
+
+  <div class="wikiversion">
+    JSPWiki v2.10.2
+  </div>
+
+  <div class="rssfeed">
+    
+  </div>
+
+</div>
+
+</div>
+
+
+
+
+</body></html>

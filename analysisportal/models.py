@@ -13,7 +13,7 @@ class Ticker(models.Model):
     
 class Stock(models.Model):
     price = models.DecimalField(max_digits=12, decimal_places=2)
-    nextEarningsDate = models.DateField()
+    nextEarningsDate = models.DateField(null=True)
     timestamp = models.DateTimeField()
     
     ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE)
@@ -40,7 +40,7 @@ class Option(models.Model):
     
     optionType = models.CharField(max_length=4)
     nasdaqName = models.CharField(max_length=30)
-    contractName = models.CharField(max_length=30)
+    contractName = models.CharField(max_length=30, null=True)
     last = models.DecimalField(max_digits=8, decimal_places=2)
     change = models.DecimalField(max_digits=4, decimal_places=2)
     bid = models.DecimalField(max_digits=8, decimal_places=2)
