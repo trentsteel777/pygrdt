@@ -14,13 +14,19 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 import djcelery
 
+# Default dates to UTC
+# https://stackoverflow.com/questions/14074696/django-datetimefield-with-utc-offset
+
+USE_TZ = True
 
 # Celery settings
+
 djcelery.setup_loader()
 BROKER_URL = 'amqp://myuser:mypassword@localhost/myvhost'
 #CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 CELERY_TIMEZONE = 'Europe/Dublin'
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

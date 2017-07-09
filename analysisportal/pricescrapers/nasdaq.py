@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 from analysisportal.models import Watchlist, Ticker, Stock, OptionChain
 from analysisportal.models import Option
 from datetime import datetime
+from django.utils import timezone
+
 
 def getWebsitHtmlAsBs4(url):
     fp = urllib.request.urlopen(url)
@@ -16,7 +18,12 @@ def getWebsitHtmlAsBs4(url):
 
 
 def scraper():
+    yahooParsedHtml = getWebsitHtmlAsBs4("https://finance.yahoo.com/quote/AAPL/")
+    earningsDateLiteral = yahooParsedHtml.body.find(attrs={"data-test" : "EARNINGS_DATE-value"}).text
+    earningsDate =  datetime.strptime(earningsDateLiteral, '%b %d, %Y').date()
     parsedHtml = getWebsitHtmlAsBs4("http://www.nasdaq.com/symbol/aapl/option-chain?money=all&expir=stan&page=1")
+    stockPrice = ( parsedHtml.body.find(id="qwidget_lastsale").text[1:] ) # Remove dollar sign
+    
     forms = [ parsedHtml.body.find(id="optionchain") ]
     
     subsequentPages = []
@@ -33,10 +40,9 @@ def scraper():
     ticker = Ticker.objects.get(ticker='AAPL')
     
     stock = Stock()
-    stock.price = 142.27
-    stock.timestamp = datetime.now()
-    
-    #ticker.stock_set.add(stock)
+    stock.price = stockPrice
+    stock.timestamp = timezone.now()
+    stock.nextEarningsDate = earningsDate
     stock.ticker = ticker
     stock.save()
     
@@ -49,7 +55,6 @@ def scraper():
         trList = form.find('table').find_all('tr')[1:] # Remove header
         extractOptions(optionChain, trList)
     
-    #ptionChain.stock_set.add(stock)
     
 
 
@@ -103,7 +108,6 @@ def extractOptions(optionChain, trList):
         
         call.optionChain = optionChain
         call.save()
-        #optionChain.option_set.add(call)
         
         put = Option()
         put.optionType = 'PUT'
@@ -118,4 +122,3 @@ def extractOptions(optionChain, trList):
         
         put.optionChain = optionChain
         put.save()
-        #optionChain.option_set.add(put)
