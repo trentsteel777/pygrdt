@@ -5,3 +5,7 @@ lib64
 share
 __pycache__
 include
+.settings
+.pydevproject
+.project
+
