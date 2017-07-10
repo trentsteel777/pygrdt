@@ -8,4 +8,5 @@ include
 .settings
 .pydevproject
 .project
+*.py[cod]
 
