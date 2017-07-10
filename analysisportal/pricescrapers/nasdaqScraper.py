@@ -1,20 +1,10 @@
-import urllib.request
+
 import time
-from bs4 import BeautifulSoup
+from util.web import getWebsitHtmlAsBs4
 from analysisportal.models import Watchlist, Ticker, Stock, OptionChain
 from analysisportal.models import Option
 from datetime import datetime
 from django.utils import timezone
-
-
-def getWebsitHtmlAsBs4(url):
-    fp = urllib.request.urlopen(url)
-    mybytes = fp.read()
-
-    nasdaqHtml = mybytes.decode("utf8")
-    fp.close()
-
-    return BeautifulSoup(nasdaqHtml, 'lxml')
 
 
 def scraper():
