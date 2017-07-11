@@ -1,8 +1,9 @@
-from util.web import getWebsitHtmlAsBs4
-from datetime import datetime
-from analysisportal.models import ExhangeHoliday
+from analysisportal.util.web import getWebsitHtmlAsBs4
+from datetime import datetime, timedelta
+from analysisportal.models import ExchangeHoliday
+import re
 
-def isOpen():
+def scrapeAndSaveNasdaqHolidays():
     url ='http://www.nasdaqtrader.com/Trader.aspx?id=Calendar'
 
     parsedHtml = getWebsitHtmlAsBs4(url)
@@ -28,14 +29,12 @@ def isOpen():
         
         if tds[2].text != 'Closed':
             removePeriods = tds[2].text.replace('.', '')
-            openTillTimeEst = datetime.strptime(removePeriods, '%I:%M %p').time()
-            OpenTillTimeUtc = openTillTimeEst + timedelta(hours=5)
+            openTillTimeEst = datetime.strptime(removePeriods, '%I:%M %p')
+            openTillTimeUtc = ( openTillTimeEst + timedelta(hours=5) ).time()
         
         exHol = ExchangeHoliday()
-        exHol.holidayDate
-        exHol.holidayDescription
+        exHol.date = holidayDate
+        exHol.description = holidayDescription
         exHol.openToTime = openTillTimeUtc
         exHol.save()
-    
-def scrapeAndSaveExchangeHolidaysFromNasdaqWebsite():
     

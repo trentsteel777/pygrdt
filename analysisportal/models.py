@@ -4,10 +4,10 @@ import pickle
 
 # Create your models here.
 
-class ExhangeHoliday(models.Model):
+class ExchangeHoliday(models.Model):
     date = models.DateField()
     description = models.CharField(max_length=45)
-    openToTime = models.TimeField() # null if closed all day # UTC
+    openToTime = models.TimeField(null=True) # null if closed all day # UTC
     
     
 class Watchlist(models.Model):
