@@ -9,4 +9,4 @@ include
 .pydevproject
 .project
 *.py[cod]
-
+*.pyc
