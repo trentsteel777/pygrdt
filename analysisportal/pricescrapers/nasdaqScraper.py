@@ -1,6 +1,6 @@
 
 import time
-from util.web import getWebsitHtmlAsBs4
+from analysisportal.util.web import getWebsitHtmlAsBs4
 from analysisportal.models import Watchlist, Ticker, Stock, OptionChain
 from analysisportal.models import Option
 from datetime import datetime

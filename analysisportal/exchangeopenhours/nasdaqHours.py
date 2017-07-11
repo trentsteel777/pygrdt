@@ -1,5 +1,6 @@
 from util.web import getWebsitHtmlAsBs4
 from datetime import datetime
+from analysisportal.models import ExhangeHoliday
 
 def isOpen():
     url ='http://www.nasdaqtrader.com/Trader.aspx?id=Calendar'
@@ -20,10 +21,21 @@ def isOpen():
     
     for tr in trs:
         tds = tr.find_all('td')
-        date = tds[0]
-        description = tds[1]
-        openTill = tds[2]
         
+        holidayDate = datetime.strptime(tds[0].text, '%B %d, %Y').date()
+        holidayDescription = tds[1].text
+        openTillTimeUtc = None
+        
+        if tds[2].text != 'Closed':
+            removePeriods = tds[2].text.replace('.', '')
+            openTillTimeEst = datetime.strptime(removePeriods, '%I:%M %p').time()
+            OpenTillTimeUtc = openTillTimeEst + timedelta(hours=5)
+        
+        exHol = ExchangeHoliday()
+        exHol.holidayDate
+        exHol.holidayDescription
+        exHol.openToTime = openTillTimeUtc
+        exHol.save()
     
 def scrapeAndSaveExchangeHolidaysFromNasdaqWebsite():
     

@@ -1,2 +1,3 @@
-from analysisportal.pricescrapers.nasdaq import *
+from analysisportal.pricescrapers.nasdaqScraper import *
 from analysisportal.models import *
+from util.web import *
