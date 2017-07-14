@@ -1,7 +1,30 @@
 from analysisportal.util.web import getWebsitHtmlAsBs4
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from analysisportal.models import ExchangeHoliday
 import re
+
+
+nasdaqClosingTime = time(hour=21) # assumes UTC
+
+# returns None if exchange is closed
+def timeNasdaqIsOpenTo():
+    sat = 5
+    sun = 6
+    currentDay = date.today().weekday()
+    
+    # Nasdaq won't be open on the weekend
+    if currentDay == sat and currentDay == sun:
+        return None
+    
+    try:
+        holiday = ExchangeHoliday.objects.get(date=date.today())
+    except ExchangeHoliday.DoesNotExist:
+        return nasdaqClosingTime
+
+    # This will be null if exchange is closed all day
+    return holiday.openToTime 
+    
+    
 
 def scrapeAndSaveNasdaqHolidays():
     url ='http://www.nasdaqtrader.com/Trader.aspx?id=Calendar'

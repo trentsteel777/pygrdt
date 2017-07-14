@@ -3,10 +3,12 @@ bin
 lib
 lib64
 share
-__pycache__
+__pycache__/
 include
 .settings
 .pydevproject
 .project
 *.py[cod]
 *.pyc
+TODO/
+

@@ -7,11 +7,14 @@ from datetime import datetime
 from django.utils import timezone
 
 
-def scraper():
-    yahooParsedHtml = getWebsitHtmlAsBs4("https://finance.yahoo.com/quote/AAPL/")
+# Takes an analysisportal.models.Ticker instance
+def scraper(ticker):
+    symbol = ticker.ticker
+    
+    yahooParsedHtml = getWebsitHtmlAsBs4("https://finance.yahoo.com/quote/" + symbol +"/")
     earningsDateLiteral = yahooParsedHtml.body.find(attrs={"data-test" : "EARNINGS_DATE-value"}).text
     earningsDate =  datetime.strptime(earningsDateLiteral, '%b %d, %Y').date()
-    parsedHtml = getWebsitHtmlAsBs4("http://www.nasdaq.com/symbol/aapl/option-chain?money=all&expir=stan&page=1")
+    parsedHtml = getWebsitHtmlAsBs4("http://www.nasdaq.com/symbol/" + symbol + "/option-chain?money=all&expir=stan&page=1")
     stockPrice = ( parsedHtml.body.find(id="qwidget_lastsale").text[1:] ) # Remove dollar sign
     
     forms = [ parsedHtml.body.find(id="optionchain") ]
@@ -26,8 +29,6 @@ def scraper():
         parsedHtml = getWebsitHtmlAsBs4(url)
         forms.append( parsedHtml.body.find(id="optionchain") )
     
-    
-    ticker = Ticker.objects.get(ticker='AAPL')
     
     stock = Stock()
     stock.price = stockPrice

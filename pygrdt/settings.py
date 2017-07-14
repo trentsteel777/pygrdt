@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-import djcelery
 
 # Default dates to UTC
 # https://stackoverflow.com/questions/14074696/django-datetimefield-with-utc-offset
@@ -20,11 +19,17 @@ import djcelery
 USE_TZ = True
 
 # Celery settings
+# new 
+CELERY_BROKER_URL = 'amqp://myuser:mypassword@localhost/myvhost'
+#CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+CELERY_BEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
-djcelery.setup_loader()
+
+# old
 BROKER_URL = 'amqp://myuser:mypassword@localhost/myvhost'
 #CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+
 CELERY_TIMEZONE = 'Europe/Dublin'
 
 
@@ -51,8 +56,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'djcelery',
-    'analysisportal',
+    'django_celery_beat',
+    'analysisportal.apps.AnalysisportalConfig'
 )
 
 MIDDLEWARE_CLASSES = (

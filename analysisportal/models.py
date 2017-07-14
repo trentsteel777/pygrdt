@@ -12,7 +12,8 @@ class ExchangeHoliday(models.Model):
     
 class Watchlist(models.Model):
     name = models.CharField(max_length=45)
-
+    enabled = models.BooleanField(default=False)
+    
 class Ticker(models.Model):
     ticker = models.CharField(max_length=5)
     watchlist = models.ForeignKey(Watchlist, on_delete=models.CASCADE)

@@ -1,3 +1,14 @@
+# imports for PyDev Shell
 from analysisportal.pricescrapers.nasdaqScraper import *
 from analysisportal.models import *
 from analysisportal.exchangeopenhours.nasdaqHours import *
+
+# Starting Celery Processes; Workers and Beat scheduler
+python manage.py celery beat
+python manage.py celery worker --loglevel=info
+
+# pip fresh install
+pip install --no-cache-dir django-celery
+
+# show version of a package
+pip show django-celery
