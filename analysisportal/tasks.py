@@ -7,12 +7,13 @@ from celery import shared_task
 def scrapeNasdaqWebsite():
     import time
     from datetime import datetime
-    return Ticker.objects.all()[0].ticker
+    from analysisportal.models import Ticker
     #from analysisportal.models import Ticker, Watchlist
     #from analysisportal.pricescrapers.nasdaqScraper import  scraper
-    #from analysisportal.exchangeopenhours.nasdaqhours import timeNasdaqIsOpenTo
+    from analysisportal.exchangeopenhours.nasdaqHours import timeNasdaqIsOpenTo
     
     closingTime = timeNasdaqIsOpenTo()
+    return Ticker.objects.all()[0].ticker
     if (closingTime == None) or (datetime.now().time() >= closingTime):
         return
     

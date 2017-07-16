@@ -1,5 +1,5 @@
 from analysisportal.util.web import getWebsitHtmlAsBs4
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta, time, date
 from analysisportal.models import ExchangeHoliday
 import re
 
