@@ -2,6 +2,9 @@
 from analysisportal.pricescrapers.nasdaqScraper import *
 from analysisportal.models import *
 from analysisportal.exchangeopenhours.nasdaqHours import *
+t=Ticker()
+t.ticker='AAPL'
+scraper(t)
 
 # Starting Celery Processes; Workers and Beat scheduler
 python manage.py celery beat

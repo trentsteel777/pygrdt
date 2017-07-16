@@ -11,4 +11,4 @@ include
 *.py[cod]
 *.pyc
 TODO/
-
+analysisportal/pricescrapers/data/
