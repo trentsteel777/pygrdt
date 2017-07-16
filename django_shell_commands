@@ -2,16 +2,25 @@
 from analysisportal.pricescrapers.nasdaqScraper import *
 from analysisportal.models import *
 from analysisportal.exchangeopenhours.nasdaqHours import *
-t=Ticker()
-t.ticker='AAPL'
-scraper(t)
 
-# Starting Celery Processes; Workers and Beat scheduler
-python manage.py celery beat
-python manage.py celery worker --loglevel=info
+
+# starting Celery Processes; Workers and Beat scheduler
+#BEAT
+celery -A pygrdt beat
+#WORKERS
+celery -A pygrdt worker -l info
 
 # pip fresh install
 pip install --no-cache-dir django-celery
 
 # show version of a package
 pip show django-celery
+
+
+# testing nasdaqScraper
+t=Ticker()
+t.ticker='AAPL'
+scraper(t)
+
+# deleting all pyc files from a project
+find . -name \*.pyc -delete

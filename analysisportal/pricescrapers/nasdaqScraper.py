@@ -1,8 +1,7 @@
 
 import time
 from analysisportal.util.web import getWebsitHtmlAsBs4
-from analysisportal.models import Watchlist, Ticker, Stock, OptionChain
-from analysisportal.models import Option
+from analysisportal.models import Watchlist, Ticker, Stock, OptionChain, Option
 from datetime import datetime
 from django.utils import timezone
 from celery.bin.call import call
@@ -60,6 +59,8 @@ def scraper(ticker):
         persistPrices(ticker, stock, optionChain, extractedOptions)
     else:
         savePricesToPickle(ticker, stock, optionChain, extractedOptions)
+        
+    return symbol + ' option data scraped'
     
 def persistPrices(ticker, stock, optionChain, callsAndPutsMap):
     stock.ticker = ticker

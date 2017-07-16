@@ -19,19 +19,7 @@ import os
 USE_TZ = True
 
 # Celery settings
-# new 
 CELERY_BROKER_URL = 'amqp://myuser:mypassword@localhost/myvhost'
-#CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
-CELERY_BEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
-
-
-# old
-BROKER_URL = 'amqp://myuser:mypassword@localhost/myvhost'
-#CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
-CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
-
-CELERY_TIMEZONE = 'Europe/Dublin'
-
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -56,8 +44,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_celery_beat',
-    'analysisportal.apps.AnalysisportalConfig'
+    'analysisportal',
 )
 
 MIDDLEWARE_CLASSES = (
