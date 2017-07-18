@@ -16,8 +16,8 @@ app.conf.beat_schedule = {
     'run-nasdaq-scraper': {
         'task': 'analysisportal.tasks.scrapeNasdaqWebsite',
         # Execute every hour between 3pm and 9pm on weekdays only
-        'schedule': crontab(),
-        #'schedule': crontab(hour='*/1,15-21', day_of_week='mon,tue,wed,thu,fri'),
+        #'schedule': crontab(), # for testing
+        'schedule': crontab(hour='*/1,15-21', day_of_week='mon,tue,wed,thu,fri'), # for production
     },
     'add-every-monday-morning': {
         'task': 'analysisportal.tasks.add',
