@@ -8,7 +8,7 @@ from celery.bin.call import call
 import pickle
 import os, sys
 
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 def getEarningsDateFromYahoo(symbol):
     yahooParsedHtml = getWebsitHtmlAsBs4("https://finance.yahoo.com/quote/" + symbol +"/")
