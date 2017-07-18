@@ -1,0 +1,23 @@
+1. init scripts
+copy files from https://github.com/celery/celery/tree/master/extra/generic-init.d into /etc/init.d/ using sudo
+
+2. create blank config files
+sudo touch /etc/default/celeryd
+sudo touch /etc/default/celerybeat
+
+3. populate config files
+Copy examples from http://docs.celeryproject.org/en/latest/userguide/daemonizing.html and change directories as needed
+
+4. create celery user and group (if not already added)
+sudo adduser celery
+
+5. Change ownership on run and log files to new celery user otherwise there is a permission denied when trying to start the worker or beat
+chown -R celery:celery /var/log/celery/
+chown -R celery:celery /var/run/celery/
+
+6. start/ stop celery worker/beat using:
+sudo /etc/init.d/celeryd start
+sudo /etc/init.d/celeryd stop
+
+sudo /etc/init.d/celerybeat start
+sudo /etc/init.d/celerybeat stop
