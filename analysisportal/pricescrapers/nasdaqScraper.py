@@ -60,7 +60,6 @@ def scraper(ticker):
     else:
         savePricesToPickle(ticker, stock, optionChain, extractedOptions)
         
-    return symbol + ' option data scraped'
     
 def persistPrices(ticker, stock, optionChain, callsAndPutsMap):
     stock.ticker = ticker
