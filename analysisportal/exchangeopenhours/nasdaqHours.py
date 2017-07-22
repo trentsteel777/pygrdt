@@ -3,8 +3,8 @@ from datetime import datetime, timedelta, time, date
 from analysisportal.models import ExchangeHoliday
 import re
 
-
-nasdaqClosingTime = time(hour=21) # assumes UTC
+# Add 15 minutes to give scraper a chance to get EOD price data
+nasdaqClosingTime = time(hour=21, minute=15) # assumes UTC
 
 # returns None if exchange is closed
 def timeNasdaqIsOpenTo():
