@@ -1,0 +1,59 @@
+inside workspace: 
+python3 -m venv pygrdt
+git clone https://github.com/trentsteel777/pygrdt.git
+source bin/activate
+
+pip-3.2 install --upgrade pip
+pip-3.2 install -r requirements.txt
+
+python manage.py makemigrations
+python manage.py migrate
+
+
+
+Raspberry PI config
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install python3-pip
+sudo apt-get install python3-venv
+usage:
+pip-3.2
+
+
+
+PYGRDT was developed using python3.5.2
+https://gist.github.com/dschep/24aa61672a2092246eaca2824400d37f
+
+Follow these instructions if you want to use that version:
+cd ~
+wget https://www.python.org/ftp/python/3.6.2/Python-3.6.2.tar.xz
+tar xf Python-3.6.2.tar.xz
+cd Python-3.6.2
+./configure
+make
+sudo make altinstall
+sudo shutdown -r now
+
+restart the PI after installing to get the new python3 working
+
+
+Open file explorer on raspberrypi from ssh -X shell:
+Following command opens a file explorer window in the current directory
+xdg-open .
+
+
+MAKE SURE CELERY BROKER IS INSTALLED (RABBITMQ)
+sudo apt-get install rabbitmq-server
+
+very useful history command line (took out 801 because it was incorrect)
+trent@Steel:~$ history | grep rabbit
+  786  which rabbit-server
+  795  sudo dpkg -i rabbitmq-server_3.6.10-1_all.deb 
+  798  sudo rabbitmqctl add_user myuser mypassword
+  799  sudo rabbitmqctl add_vhost myvhost
+  800  sudo rabbitmqctl set_user_tags myuser mytag
+  802  sudo rabbitmqctl set_permissions -p myvhost myuser ".*" ".*" ".*"
+  885  rabbitmq-server
+  886  rabbitmq
+ 1696  history | grep rabbit
+

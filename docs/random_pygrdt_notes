@@ -1,0 +1,13 @@
+Notes from red notepad 18/7/17
+
+redis and memcached as caching layer (perhaps for strategy results)
+
+When scraping data try to find stock specific table otherwise fall back to generic option table
+
+celery workers can be written in pure c - interoperating with c by using librabbitmq-c. Celery workers can also be written in c by calling the c code by extending python (python extended methods). Might now have to do this straight away if using PyOpenCL.
+
+There should be two databases, one on each odroid. One production database and the other a backup database for fall back/ recovery.
+
+Add proper names on the tables. Not 'analysisportal_option'
+
+

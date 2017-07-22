@@ -8,16 +8,30 @@ sudo touch /etc/default/celerybeat
 3. populate config files
 Copy examples from http://docs.celeryproject.org/en/latest/userguide/daemonizing.html and change directories as needed
 
+Note: the user you run celery as needs to be able to access the read
+and write places of your app. So if your app is in another user's home directory
+the setup won't work
+
 4. create celery user and group (if not already added)
 sudo adduser celery
+# password -> celery
 
 5. Change ownership on run and log files to new celery user otherwise there is a permission denied when trying to start the worker or beat
-chown -R celery:celery /var/log/celery/
-chown -R celery:celery /var/run/celery/
+sudo chown -R celery:celery /var/log/celery/
+sudo chown -R celery:celery /var/run/celery/
 
-6. start/ stop celery worker/beat using:
+sudo chown -R trent:trent /var/log/celery/
+sudo chown -R trent:trent /var/run/celery/
+
+6. Make init.d scripts executable
+sudo chmod 755 /etc/init.d/celerybeat
+sudo chmod 755 /etc/init.d/celeryd
+
+7. start/ stop celery worker/beat using:
 sudo /etc/init.d/celeryd start
 sudo /etc/init.d/celeryd stop
+sudo /etc/init.d/celeryd restart
 
 sudo /etc/init.d/celerybeat start
 sudo /etc/init.d/celerybeat stop
+sudo /etc/init.d/celerybeat restart

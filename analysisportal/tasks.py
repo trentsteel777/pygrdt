@@ -25,6 +25,14 @@ def scrapeNasdaqWebsite():
         
 @shared_task
 def add(x, y):
+    import pickle
+    import time
+    import os
+    sum = x + y
+    PICKLE_DIR = os.path.join(os.getcwd(), 'analysisportal/pricescrapers/data/nasdaq')
+    fileName = os.path.join(PICKLE_DIR, 'ADD_' + time.strftime("%Y_%m_%d_%H_%M") +'.pickle')
+    with open(fileName, 'wb') as handle:
+        pickle.dump(sum, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return x + y
 
 
