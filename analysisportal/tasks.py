@@ -6,19 +6,24 @@ from celery import shared_task
 @shared_task
 def scrapeNasdaqWebsite():
     import time
-    from datetime import datetime
+    from datetime import date, datetime, time, timedelta
     from analysisportal.models import Ticker, Watchlist
     from analysisportal.pricescrapers.nasdaqScraper import  scraper
     from analysisportal.exchangeopenhours.nasdaqHours import timeNasdaqIsOpenTo
     
-    closingTime = timeNasdaqIsOpenTo()
+    # Add 30 minutes to get end of day data
+    closingTime = (datetime.combine(date.today(), timeNasdaqIsOpenTo()) + timedelta(minutes=30)).time()
     currentTime = datetime.now().time()
     if (closingTime == None) or ( (currentTime >= closingTime) and (currentTime.hour >= 15) ):
         return 'Nasdaq is closed . No options scraped.'
     
     enabledTickers = Ticker.objects.order_by().filter(watchlist__enabled__exact=True).distinct()
     for ticker in enabledTickers:
-        scraper(ticker)
+        try:
+            scraper(ticker)
+        except:
+            pass
+        
         
     symbolList = [t.ticker for t in enabledTickers]
     return 'scraped option data for ' + str(symbolList)

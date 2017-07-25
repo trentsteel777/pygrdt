@@ -2,7 +2,7 @@
 from analysisportal.pricescrapers.nasdaqScraper import *
 from analysisportal.models import *
 from analysisportal.exchangeopenhours.nasdaqHours import *
-
+from analysisportal.cboedownloader.downloader import *
 
 # starting Celery Processes; Workers and Beat scheduler
 #BEAT
