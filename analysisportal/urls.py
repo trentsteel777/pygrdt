@@ -5,4 +5,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     url(r'^analyze$', views.analyze, name='analyze'),
+    url(r'^grdt$', views.grdt, name='grdt'),
+    url(r'^ajax/validate_username/$', views.validate_username, name='validate_username'),
+    url(r'^ajax/dispatcher/$', views.dispatcher, name='dispatcher'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
