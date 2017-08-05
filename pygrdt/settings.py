@@ -13,14 +13,21 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
+# ExtJS
+# On dev -> '/home/trent/Workspace/django_virtual_environments/pygrdtvenv/pygrdt'
+_ROOT_PATH = os.path.dirname(__file__)
+
 # Default dates to UTC
 # https://stackoverflow.com/questions/14074696/django-datetimefield-with-utc-offset
 
 USE_TZ = True
 
+CSRF_USE_SESSIONS=False
+
 # Celery settings
 CELERY_BROKER_URL = 'amqp://myuser:mypassword@localhost/myvhost'
 
+# On Dev machine -> '/home/trent/Workspace/django_virtual_environments/pygrdtvenv'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -50,7 +57,7 @@ INSTALLED_APPS = (
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',  AJAX requests won't work without a crsf token if this is enabled
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -63,7 +70,7 @@ ROOT_URLCONF = 'pygrdt.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -108,9 +115,27 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# On dev machine -> '/home/trent/Workspace/django_virtual_environments/pygrdtvenv/static'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticroot')
 
 
 STATICFILES_DIRS = (
-    #os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'static'),
 )
+
+#STATICFILES_DIRS = (
+#    os.path.join(_ROOT_PATH, 'static'), #project-wide static files
+# Put strings here, like "/home/html/static" or "C:/www/django/static".
+# Always use forward slashes, even on Windows.
+# Don't forget to use absolute paths, not relative paths.
+#)
+
+#TEMPLATE_DIRS = (
+#     os.path.join(BASE_DIR, 'templates'), #project-wide templates
+    
+    #app templates/ dirs are detected automatically, so they'are not put there
+    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+#)

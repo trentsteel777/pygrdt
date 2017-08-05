@@ -1,0 +1,42 @@
+1. Download the latest version of sencha cmd from:
+https://www.sencha.com/products/extjs/cmd-download/
+
+2. Install sencha cmd 
+
+# Secret dependency for Sencha Cmd
+apt-get update
+apt-get install -y libfontconfig
+
+# Download Sencha Cmd in the current working directory
+curl -O http://cdn.sencha.com/cmd/5.1.1.39/SenchaCmd-5.1.1.39-linux-x64.run.zip
+
+# Unzip Sencha Cmd in the current working directory
+unzip SenchaCmd-5.1.1.39-linux-x64.run.zip
+
+# Make .run file executable
+chmod +x SenchaCmd-5.1.1.39-linux-x64.run
+
+# Execute the silent install
+./SenchaCmd-5.1.1.39-linux-x64.run --mode unattended --prefix /home
+
+# Add Sencha Cmd to your PATH
+PATH=$PATH:/home/Sencha/Cmd/5.1.1.39
+
+# Clean up unneeded files
+rm -f SenchaCmd-5.1.1.39-linux-x64.run
+rm -f SenchaCmd-5.1.1.39-linux-x64.run.zip
+
+
+Instructions from:
+https://gist.github.com/jbaranski/1adc98f6f129906204ee
+
+
+3. Get the GPL version of ExtJ_6.2 from:
+https://github.com/fwyzard/extjs 
+
+4. Setup app with command like the following
+This command creates an extjs app that will support desktops and mobile and have a universal folder for shared code
+sencha -sdk /home/trent/Workspace/django_virtual_environments/extjs generate app MyApp /home/trent/Workspace/django_virtual_environments/grtdui
+
+This command creates an extjs that will only support desktop
+sencha -sdk /home/trent/Workspace/django_virtual_environments/extjs generate app --ext --classic grdtui /home/trent/Workspace/django_virtual_environments/pygrdtvenv/analysisportal/static/analysisportal/grdtui/
