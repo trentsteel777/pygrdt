@@ -8,7 +8,6 @@ def scrapeNasdaqWebsite():
     import time
     from datetime import date, datetime, time, timedelta
     from analysisportal.models import Ticker, Watchlist
-    from analysisportal.pricescrapers.nasdaqScraper import  scraper
     from analysisportal.exchangeopenhours.nasdaqHours import timeNasdaqIsOpenTo
     
     # Add 30 minutes to get end of day data
@@ -18,16 +17,30 @@ def scrapeNasdaqWebsite():
         return 'Nasdaq is closed . No options scraped.'
     
     enabledTickers = Ticker.objects.order_by().filter(watchlist__enabled__exact=True).distinct()
+    errMsg = ''
     for ticker in enabledTickers:
         try:
-            scraper(ticker)
+            # Push scraping task to celery queue
+            scrape.delay(ticker.ticker)
         except:
-            pass
-        
-        
+            errMsg += ticker.ticker + ', '
+    
+            
     symbolList = [t.ticker for t in enabledTickers]
-    return 'scraped option data for ' + str(symbolList)
-        
+    resultMsg = 'Will attempt to scrape prices for ' + str(symbolList)
+    if errMsg:
+        resultMsg += '. Problems occurred when trying to create the tasks to scrape the following tickers ' + errMsg
+    return resultMsg
+
+
+@shared_task
+def scrape(tickerLiteral):
+    from analysisportal.pricescrapers.nasdaqScraper import  scraper
+    from analysisportal.models import Ticker
+    ticker= Ticker.objects.get(ticker=tickerLiteral)
+    scraper(ticker)
+    return 'Scraped option prices for ' + ticker.ticker
+
 @shared_task
 def add(x, y):
     import pickle
