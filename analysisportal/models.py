@@ -21,7 +21,8 @@ class Ticker(models.Model):
     
 class Stock(models.Model):
     price = models.DecimalField(max_digits=12, decimal_places=2)
-    nextEarningsDate = models.DateField(null=True)
+    earningsDateStart = models.DateField(null=True)
+    earningsDateEnd = models.DateField(null=True,default=None)
     timestamp = models.DateTimeField()
     
     ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE)

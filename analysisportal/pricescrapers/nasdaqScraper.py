@@ -7,20 +7,33 @@ from django.utils import timezone
 from celery.bin.call import call
 import pickle
 import os, sys
+import logging
+from celery.utils import objects
 
 DEBUG_MODE = False
+LOGGER = logging.getLogger(__name__)
 
 def getEarningsDateFromYahoo(symbol):
     yahooParsedHtml = getWebsitHtmlAsBs4("https://finance.yahoo.com/quote/" + symbol +"/")
     earningsDateLiteral = yahooParsedHtml.body.find(attrs={"data-test" : "EARNINGS_DATE-value"}).text
-    earningsDate =  datetime.strptime(earningsDateLiteral, '%b %d, %Y').date()
-    return earningsDate
+    
+    if '-' not in earningsDateLiteral:
+        earningsDateStart =  datetime.strptime(earningsDateLiteral.strip(), '%b %d, %Y').date()
+        earningsDateEnd = None
+    elif '-' in earningsDateLiteral:
+        dates = earningsDateLiteral.split('-')
+        startLiteral = dates[0].strip()
+        endLiteral = dates[1].strip()
+        earningsDateStart =  datetime.strptime(startLiteral, '%b %d, %Y').date()
+        earningsDateEnd = datetime.strptime(endLiteral, '%b %d, %Y').date()
+        
+    return (earningsDateStart, earningsDateEnd)
     
     
 # Takes an analysisportal.models.Ticker instance
 def scraper(ticker):
     symbol = ticker.ticker
-    earningsDate = getEarningsDateFromYahoo(symbol)
+    earningsDateStart, earningsDateEnd  = getEarningsDateFromYahoo(symbol)
     
     parsedHtml = getWebsitHtmlAsBs4("http://www.nasdaq.com/symbol/" + symbol + "/option-chain?money=all&expir=stan&page=1")
     stockPrice = ( parsedHtml.body.find(id="qwidget_lastsale").text[1:] ) # Remove dollar sign
@@ -41,8 +54,8 @@ def scraper(ticker):
     stock = Stock()
     stock.price = stockPrice
     stock.timestamp = timezone.now()
-    stock.nextEarningsDate = earningsDate
-    
+    stock.earningsDateStart = earningsDateStart
+    stock.earningsDateEnd = earningsDateEnd
     
     optionChain = OptionChain()
     optionChain.expirationType = 'MONTHLY'
@@ -51,9 +64,9 @@ def scraper(ticker):
     extractedOptions = {'calls': [], 'puts': []}
     for form in forms:
         trList = form.find('table').find_all('tr')[1:] # Remove header
-        call, put = extractOptions(trList)
-        extractedOptions['calls'].append(call)
-        extractedOptions['puts'].append(put)
+        calls, puts = extractOptions(trList)
+        extractedOptions['calls'].extend(calls)
+        extractedOptions['puts'].extend(puts)
     
     if not DEBUG_MODE:
         persistPrices(ticker, stock, optionChain, extractedOptions)
@@ -88,6 +101,15 @@ def savePricesToPickle(ticker, stock, optionChain, extractedOptions):
     with open(fileName, 'wb') as handle:
         pickle.dump(optionData, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
+def readSavedPricesFromPickle(fileName):
+    objects = []
+    with (open(fileName, "rb")) as openfile:
+        while True:
+            try:
+                objects.append(pickle.load(openfile))
+            except EOFError:
+                break
+    return objects
 
 callNameIndex = 0
 callLastIndex = 1
@@ -112,6 +134,8 @@ putOpenInterestIndex = 15
 
 
 def extractOptions(trList):
+    calls = []
+    puts = []
     for tr in trList:
         tdList = tr.find_all('td')
         call = Option()
@@ -136,7 +160,10 @@ def extractOptions(trList):
         put.openInterest = toInt( tdList[putOpenInterestIndex].text )
         put.strike       = toFloat( tdList[strikeIndex]       .text )
         
-        return call, put
+        calls.append(call)
+        puts.append(put)
+        
+    return calls, puts
         
 # could be better validation around these helper methods
 def toFloat(value):

@@ -18,9 +18,15 @@ pip show django-celery
 
 
 # testing nasdaqScraper
-t=Ticker()
-t.ticker='AAPL'
+t=Ticker.objects.get(ticker='AAPL')
 scraper(t)
 
 # deleting all pyc files from a project
 find . -name \*.pyc -delete
+
+
+# reading pickle file
+objs=readSavedPricesFromPickle('/home/trent/Workspace/django_virtual_environments/pygrdtvenv/analysisportal/pricescrapers/data/nasdaq/AAPL_2017_09_02_19_19.pickle')
+
+# example usage of what's returned from pickle
+len(objs[0]['extractedOptions']['calls'])
