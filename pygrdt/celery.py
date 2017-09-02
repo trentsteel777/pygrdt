@@ -17,13 +17,14 @@ app.conf.beat_schedule = {
         'task': 'analysisportal.tasks.scrapeNasdaqWebsite',
         # Execute every hour between 3pm and 9pm on weekdays only
         #'schedule': crontab(), # for testing
-        'schedule': crontab(hour='15-21', day_of_week='mon,tue,wed,thu,fri'), # for production
+        'schedule': crontab(minute=0, hour='15-21', day_of_week='mon,tue,wed,thu,fri'), # for production
     },
-    'add-every-monday-morning': {
-        'task': 'analysisportal.tasks.add',
-        'schedule': crontab(),
-        'args': (16, 16),
-    },
+    # for testing
+    #'add-every-monday-morning': {
+    #    'task': 'analysisportal.tasks.add',
+    #    'schedule': crontab(),
+    #    'args': (16, 16),
+    #},
 }
 
 
