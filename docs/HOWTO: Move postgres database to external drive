@@ -1,0 +1,54 @@
+
+#Step 1 - If external hard drive is a FAT filesystem you want be able to maintain permissions in this hard drive.
+# You may want to reformat the harddrive (you will lose all data), otherwise skip to step 2.
+
+# What was recommended was to reformat to filesystem type ext4. This will maintain permissions when copying from linux to there.
+# However, supposedly it is not as compatible with windows as FAT.
+
+#Ref: https://askubuntu.com/questions/549078/format-external-hard-drive-to-ext4-in-command-line
+# Make sure /dev/sda1 is in fact the external harddrive before reformatting it! To do this you can use: sudo fdisk -l
+sudo umount /dev/sda1
+sudo mkfs.ext4 /dev/sda1
+
+#Now the external harddrive has been reformatted you can give it a name
+sudo e2label /dev/sda1 grdt_db_hd
+
+#Step 2 - Move the database
+
+#Find where databases are installed
+#Ref: https://www.digitalocean.com/community/tutorials/how-to-move-a-postgresql-data-directory-to-a-new-location-on-ubuntu-16-04
+sudo -u postgres psql
+SHOW data_directory;
+
+# dir to move:
+/var/lib/postgresql/9.5/main
+
+# shutdown postgressql before making the move AND verify the shutdown was a success
+sudo systemctl stop postgresql
+sudo systemctl status postgresql
+
+#Using the -a flag preserves the permissions and other directory properties while -v provides verbose output so you can follow the progress.
+# Starting the rysnc from postgresql folder mimics the original directory structure in new location.
+# Using -a will retain ownership by PostgresSQL user so permissions problems are avoided in future upgrades
+
+sudo rsync -av /var/lib/postgresql /media/odroid/grdt_db_hd/
+
+# Rename the original folder until you can confirm the rsync was a success
+sudo mv /var/lib/postgresql/9.5/main /var/lib/postgresql/9.5/main.bak
+
+# Rename the postgres folder
+sudo mv /var/lib/postgresql/ /var/lib/postgresql_old/
+
+# Create symlink to the new location of the database
+cd /var/lib/
+sudo ln -s /media/odroid/grdt_db_hd/postgresql /var/lib/postgresql
+
+# Add appropriate permissions so the postgres user has access to the new location of the database
+#https://unix.stackexchange.com/questions/285080/psql-could-not-connect-to-server-no-such-file-or-directory
+sudo chown -R postgres:postgres /var/lib/postgresql/
+sudo chmod -R u=rwX,go= /var/lib/postgresql/
+
+# Check changes were a success
+sudo systemctl start postgresql
+sudo systemctl status postgresql
+sudo -u postgres psql
