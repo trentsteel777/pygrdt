@@ -1,0 +1,64 @@
+#Create installation directories
+mkdir ~/venvs/
+
+#cd ~/venvs/ and download project from github
+git clone https://github.com/trentsteel777/pygrdt.git
+
+#Create virtual environment
+python3 -m venv pygrdt
+
+#Setup postgres database
+see document 'pygrdt_database_config.txt' in docs folder
+
+#Activate virtual environment
+cd ~/venvs/pygrdt
+source bin/activate
+
+#Install requirements
+pip install -r requirements.txt
+
+#Dependencies may be needed for:
+#lxml
+sudo apt-get install python-dev libxml2-dev libxslt1-dev zlib1g-dev python3-dev
+
+#postgres
+sudo apt-get install libpq-dev
+
+#Run command to setup tables in database
+python manage.py migrate
+
+#Run the setup_pygrdt.py script to add some initial data to database
+cd ~/venvs/pygrdt
+source bin/activate
+./manage.py shell < ~/venvs/pygrdt/initial_setup/setup_pygrdt.py
+
+#Setup celery to run as a daemon (for some further info see HOWTO: Daemonize Celery)
+1. copy init scripts to correct location in filesystem
+# You may need to change the user and pygrdt installation location path
+# in the /etc/default/celery* files if installation is different than default
+cd ~/venvs/pygrdt/initial_setup/etc/default/
+sudo cp celery* /etc/default/
+
+cd ~/venvs/pygrdt/initial_setup/etc/init.d/
+sudo cp celery* /etc/init.d/
+
+2. Change ownership on run and log files to new pygrdt user otherwise there is a permission denied when trying to start the worker or beat
+sudo chown -R odroid:odroid /var/log/celery/
+sudo chown -R odroid:odroid /var/run/celery/
+
+3. Add celeryd and celerybeat to run on startup
+sudo update-rc.d celerybeat defaults
+sudo update-rc.d celeryd defaults
+
+# Start celeryd and celerybeat to begin scraping prices from the nasdaq website
+sudo /etc/init.d/celeryd start
+sudo /etc/init.d/celerybeat start
+
+# Run django server so it is accessible from home lan. Replace ip 192.168.1.8 as appropriate.
+python manage.py runserver 192.168.1.8:8000
+
+#If you setup a rule on your router you can give the address 192.168.1.8 a domain name.
+# for example odroid. This means that you can access django from other computers on your home network
+# by odroid1:8000/grdt
+
+

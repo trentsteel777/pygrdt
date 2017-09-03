@@ -1,0 +1,17 @@
+#Delete migration files from project folder
+cd ~/venvs/pygrdt/analysisportal/migrations
+find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+find . -path "*/migrations/*.pyc"  -delete
+
+#Drop database and recreate it
+sudo su postgres
+psql
+DROP DATABASE pygrdt;
+CREATE DATABASE pygrdt;
+GRANT ALL PRIVILEGES ON DATABASE pygrdt TO myuser;
+
+# Add back tables and fields to database
+python manage.py makemigrations
+python manage.py migrate
+
+#Ref: https://simpleisbetterthancomplex.com/tutorial/2016/07/26/how-to-reset-migrations.html

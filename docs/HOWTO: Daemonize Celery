@@ -30,7 +30,16 @@ sudo chown -R pi:pi /var/run/celery/
 sudo chmod 755 /etc/init.d/celerybeat
 sudo chmod 755 /etc/init.d/celeryd
 
-7. start/ stop celery worker/beat using:
+7. Add celeryd and celerybeat to run on startup
+#Ref: https://www.jamescoyle.net/cheat-sheets/791-update-rc-d-cheat-sheet
+sudo update-rc.d celerybeat defaults
+sudo update-rc.d celeryd defaults
+
+If you wish to stop them running on startup:
+update-rc.d -f celerybeat remove
+update-rc.d -f celeryd remove
+
+8. start/ stop celery worker/beat using:
 sudo /etc/init.d/celeryd start
 sudo /etc/init.d/celeryd stop
 sudo /etc/init.d/celeryd restart

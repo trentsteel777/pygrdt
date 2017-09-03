@@ -39,7 +39,7 @@ SECRET_KEY = 'e0^*3r$uz6-%4kf@f3a)=elzodnufhw5oalo^+*=!b6u#ofx1v'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.1.8', 'odroid1']
 
 
 # Application definition
@@ -99,7 +99,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'pygrdt',
-        'USER': 'trent',
+        'USER': 'odroid',
         'PASSWORD': 'YTwasder2345',
     }
 }

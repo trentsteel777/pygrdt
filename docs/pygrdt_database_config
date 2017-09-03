@@ -1,8 +1,14 @@
+#Install postgres to your system if it is not already installed
+sudo apt-get install postgresql postgresql-contrib
+
 #open postgre
 sudo su - postgres
 #start shell
 psql
 
+# Replace myuser and mypassword as appropriate and run the following commands.
+# N.B. The changes to myuser and mypassword will need to be reflected in the 
+# pygrdt/pygrdt/settings.py file in the DATABASES section.
 CREATE DATABASE pygrdt;
 CREATE USER myuser WITH PASSWORD 'mypassword';
 
@@ -15,7 +21,3 @@ GRANT ALL PRIVILEGES ON DATABASE pygrdt TO myuser;
 
 \q
 exit
-
-#FYI: psycopg2 package for django to connect to a postgres database
-source pygrdt/bin/activate
-pip install psycopg2
