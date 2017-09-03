@@ -1,0 +1,21 @@
+#open postgre
+sudo su - postgres
+#start shell
+psql
+
+CREATE DATABASE pygrdt;
+CREATE USER myuser WITH PASSWORD 'mypassword';
+
+
+ALTER ROLE myuser SET client_encoding TO 'utf8';
+ALTER ROLE myuser SET default_transaction_isolation TO 'read committed';
+ALTER ROLE myuser SET timezone TO 'UTC';
+
+GRANT ALL PRIVILEGES ON DATABASE pygrdt TO myuser;
+
+\q
+exit
+
+#FYI: psycopg2 package for django to connect to a postgres database
+source pygrdt/bin/activate
+pip install psycopg2
