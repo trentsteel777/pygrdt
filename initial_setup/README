@@ -1,0 +1,14 @@
+The files celeryd and celerybeat files need to go in the corresponding locations
+from your root folder.
+
+You may also need t change the paths in the celeryd and celerybeat files added
+to the /etc/default/ folder to match the user you will use to run celery and also
+the install location you have chosen for PYGRDT.
+
+/etc/default/celeryd
+/etc/default/celerybeat
+
+/etc/init.d/celeryd
+/etc/init.d/celerybeat
+
+

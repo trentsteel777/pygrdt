@@ -1,0 +1,13 @@
+# Absolute or relative path to the 'celery' command:
+CELERY_BIN="~/venvs/pygrdt/bin/celery"
+
+# App instance to use
+CELERY_APP="pygrdt"
+# or fully qualified:
+#CELERY_APP="pygrdt.tasks:app"
+
+# Where to chdir at start.
+CELERYBEAT_CHDIR="~/venvs/pygrdt/"
+
+# Extra arguments to celerybeat
+CELERYBEAT_OPTS="--schedule=/var/run/celery/celerybeat-schedule"
