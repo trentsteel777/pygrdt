@@ -16,7 +16,7 @@ def scrapeNasdaqWebsite():
     if (closingTime == None) or ( (currentTime >= closingTime) and (currentTime.hour >= 15) ):
         return 'Nasdaq is closed . No options scraped.'
     
-    enabledTickers = Ticker.objects.order_by().filter(watchlist__enabled__exact=True).distinct()
+    enabledTickers = Ticker.objects.order_by().filter(enabled=True, watchlist__enabled__exact=True).distinct()
     errMsg = ''
     for ticker in enabledTickers:
         try:

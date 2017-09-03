@@ -4,4 +4,15 @@
 # exec(open("./initial_setup/setup_pygrdt").read())
 
 
-Source.objects.get_or_create(name="Website")
+#Source.objects.get_or_create(name="Website")
+from analysisportal.models import *
+
+wl = Watchlist()
+wl.name = 'DEFAULT'
+wl.enabled = True
+wl.save()
+
+t = Ticker()
+t.ticker = 'AAPL'
+t.watchlist = wl
+t.save()

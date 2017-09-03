@@ -18,6 +18,7 @@ class Watchlist(models.Model):
 class Ticker(models.Model):
     ticker = models.CharField(max_length=5)
     watchlist = models.ForeignKey(Watchlist, on_delete=models.CASCADE)
+    enabled = models.BooleanField(default=True)
     
 class Stock(models.Model):
     price = models.DecimalField(max_digits=12, decimal_places=2)
