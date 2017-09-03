@@ -12,4 +12,4 @@ include
 *.pyc
 TODO/
 analysisportal/pricescrapers/data/
-pygrdt_database_config
+selenium
