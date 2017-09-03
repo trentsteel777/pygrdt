@@ -61,4 +61,14 @@ python manage.py runserver 192.168.1.8:8000
 # for example odroid. This means that you can access django from other computers on your home network
 # by odroid1:8000/grdt
 
+#If you have ubuntu installed and you don't want to run the gui on startup then:
+#Ref: https://superuser.com/questions/1106174/boot-ubuntu-16-04-into-command-line-do-not-start-gui
+# Find display manager
+cat /etc/X11/default-display-manager
+
+# Disable GUI on startup
+sudo systemctl disable lightdm.service
+
+# To start GUI from command line:
+sudo systemctl start lightdm.service
 
