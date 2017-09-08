@@ -14,10 +14,18 @@ DEBUG_MODE = False
 LOGGER = logging.getLogger(__name__)
 
 def getEarningsDateFromYahoo(symbol):
+    earningsDateStart = None
+    earningsDateEnd = None
+        
     yahooParsedHtml = getWebsitHtmlAsBs4("https://finance.yahoo.com/quote/" + symbol +"/")
-    earningsDateLiteral = yahooParsedHtml.body.find(attrs={"data-test" : "EARNINGS_DATE-value"}).text
+    try:
+        earningsDateLiteral = yahooParsedHtml.body.find(attrs={"data-test" : "EARNINGS_DATE-value"}).text
+    except:
+        return (earningsDateStart, earningsDateEnd)
     
-    if '-' not in earningsDateLiteral:
+    if 'N/A' in earningsDateLiteral:
+        return (earningsDateStart, earningsDateEnd)
+    elif '-' not in earningsDateLiteral:
         earningsDateStart =  datetime.strptime(earningsDateLiteral.strip(), '%b %d, %Y').date()
         earningsDateEnd = None
     elif '-' in earningsDateLiteral:

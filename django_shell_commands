@@ -30,3 +30,6 @@ objs=readSavedPricesFromPickle('/home/trent/Workspace/django_virtual_environment
 
 # example usage of what's returned from pickle
 len(objs[0]['extractedOptions']['calls'])
+
+enabledTickers = Ticker.objects.order_by().filter(enabled=True, watchlist__enabled__exact=True).distinct()
+
