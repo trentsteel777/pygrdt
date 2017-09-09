@@ -1,7 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 from celery import shared_task
 
-
+DEBUG_MODE = False
     
 @shared_task
 def scrapeNasdaqWebsite():
@@ -10,11 +10,12 @@ def scrapeNasdaqWebsite():
     from analysisportal.models import Ticker, Watchlist
     from analysisportal.exchangeopenhours.nasdaqHours import timeNasdaqIsOpenTo
     
-    # Add 30 minutes to get end of day data
-    closingTime = (datetime.combine(date.today(), timeNasdaqIsOpenTo()) + timedelta(minutes=30)).time()
-    currentTime = datetime.now().time()
-    if (closingTime == None) or ( (currentTime >= closingTime) and (currentTime.hour >= 15) ):
-        return 'Nasdaq is closed . No options scraped.'
+    if not DEBUG_MODE:
+        # Add 30 minutes to get end of day data
+        closingTime = (datetime.combine(date.today(), timeNasdaqIsOpenTo()) + timedelta(minutes=30)).time()
+        currentTime = datetime.now().time()
+        if (closingTime == None) or ( (currentTime >= closingTime) and (currentTime.hour >= 15) ):
+            return 'Nasdaq is closed . No options scraped.'
     
     enabledTickers = Ticker.objects.order_by().filter(enabled=True, watchlist__enabled__exact=True).distinct()
     errMsg = ''
@@ -38,8 +39,7 @@ def scrape(tickerLiteral):
     from analysisportal.pricescrapers.nasdaqScraper import  scraper
     from analysisportal.models import Ticker
     ticker= Ticker.objects.get(ticker=tickerLiteral)
-    scraper(ticker)
-    return 'Scraped option prices for ' + ticker.ticker
+    return scraper(ticker)
 
 @shared_task
 def add(x, y):

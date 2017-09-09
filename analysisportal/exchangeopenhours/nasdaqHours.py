@@ -1,4 +1,4 @@
-from analysisportal.util.web import getWebsitHtmlAsBs4
+from analysisportal.util.web import getWebsiteHtmlAsBs4
 from datetime import datetime, timedelta, time, date
 from analysisportal.models import ExchangeHoliday
 import re
@@ -28,7 +28,7 @@ def timeNasdaqIsOpenTo():
 def scrapeAndSaveNasdaqHolidays():
     url ='http://www.nasdaqtrader.com/Trader.aspx?id=Calendar'
 
-    parsedHtml = getWebsitHtmlAsBs4(url)
+    parsedHtml = getWebsiteHtmlAsBs4(url)
 
     holidayTables = parsedHtml.body.find_all('div', class_='dataTable')
 

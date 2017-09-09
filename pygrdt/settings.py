@@ -101,6 +101,7 @@ DATABASES = {
         'NAME': 'pygrdt',
         'USER': 'odroid',
         'PASSWORD': 'YTwasder2345',
+        'HOST': 'localhost',
     }
 }
 
@@ -146,3 +147,69 @@ STATICFILES_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 #)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+        'standard': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        },
+        'custom': {
+            'format': '%(asctime)s %(levelname)s %(module)s %(message)s'
+        },
+    },
+    'filters': {
+
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/debug.log',
+            'formatter': 'verbose',
+        },
+        'fScraper': {
+            'level':'DEBUG',
+            'class':'logging.handlers.TimedRotatingFileHandler',
+            'when':'midnight',
+            'utc':True,
+            'filename': 'logs/scraper/nasdaq.log',
+            'formatter':'custom',
+        },
+                 
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'analysisportal.pricescrapers.nasdaqScraper': {
+            'handlers': [
+                'fScraper',
+                #'file',
+            ],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'analysisportal.util.web': {
+            'handlers': [
+                'fScraper',
+            ],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    }
+}

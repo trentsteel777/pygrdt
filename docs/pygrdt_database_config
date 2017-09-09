@@ -17,7 +17,16 @@ ALTER ROLE myuser SET client_encoding TO 'utf8';
 ALTER ROLE myuser SET default_transaction_isolation TO 'read committed';
 ALTER ROLE myuser SET timezone TO 'UTC';
 
+# Allows connect privileges to myuser
 GRANT ALL PRIVILEGES ON DATABASE pygrdt TO myuser;
 
 \q
 exit
+
+# If conneting to pygrdt fails for a given user you may need to run the following
+# Allows db operation privileges to myuser
+sudo su postgres
+psql pygrdt postgres
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO myuser;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO myuser;
+GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO myuser;

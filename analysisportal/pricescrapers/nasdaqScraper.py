@@ -1,6 +1,6 @@
 
 import time
-from analysisportal.util.web import getWebsitHtmlAsBs4
+from analysisportal.util.web import getWebsiteHtmlAsBs4
 from analysisportal.models import Watchlist, Ticker, Stock, OptionChain, Option
 from datetime import datetime
 from django.utils import timezone
@@ -11,16 +11,18 @@ import logging
 from celery.utils import objects
 
 DEBUG_MODE = False
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
+    
 def getEarningsDateFromYahoo(symbol):
     earningsDateStart = None
     earningsDateEnd = None
         
-    yahooParsedHtml = getWebsitHtmlAsBs4("https://finance.yahoo.com/quote/" + symbol +"/")
     try:
+        yahooParsedHtml = getWebsiteHtmlAsBs4("https://finance.yahoo.com/quote/" + symbol +"/")
         earningsDateLiteral = yahooParsedHtml.body.find(attrs={"data-test" : "EARNINGS_DATE-value"}).text
-    except:
+    except Exception as err:
+        logger.warn('getEarningsDateFromYahoo( ' + symbol.upper() + ' ): ' + str(err))
         return (earningsDateStart, earningsDateEnd)
     
     if 'N/A' in earningsDateLiteral:
@@ -43,20 +45,37 @@ def scraper(ticker):
     symbol = ticker.ticker
     earningsDateStart, earningsDateEnd  = getEarningsDateFromYahoo(symbol)
     
-    parsedHtml = getWebsitHtmlAsBs4("http://www.nasdaq.com/symbol/" + symbol + "/option-chain?money=all&expir=stan&page=1")
-    stockPrice = ( parsedHtml.body.find(id="qwidget_lastsale").text[1:] ) # Remove dollar sign
+    url = "http://www.nasdaq.com/symbol/" + symbol + "/option-chain?money=all&expir=stan&page=1"
+    errMsg = 'Failed to scrape option prices for ' + url
     
-    forms = [ parsedHtml.body.find(id="optionchain") ]
+    genMsg = 'scraping for: ' + url
+    logger.info(genMsg)
     
+    parsedHtml = getWebsiteHtmlAsBs4(url)
+    if parsedHtml is None:
+        logger.error(errMsg)
+        return symbol + ' -> Could not reach url or decode it.'
+    
+    try:
+        stockPrice = parsedHtml.body.find(id="qwidget_lastsale").text[1:] # Remove dollar sign
+    except AttributeError as aErr:
+        logger.error('scraper( ' + symbol.upper() + ' ). Could not get price. May be an invalid symbol. Error message: ' + str(aErr))
+        return symbol + ' -> Could not get price. May be an invalid symbol.'
+        
     subsequentPages = []
     pager = parsedHtml.find(id='pager').find_all('a')
     for a in pager:
         if a.text.isnumeric():
             subsequentPages.append( a['href'] )
     
+    forms = [ parsedHtml.body.find(id="optionchain") ]
     for url in subsequentPages:
-        parsedHtml = getWebsitHtmlAsBs4(url)
-        forms.append( parsedHtml.body.find(id="optionchain") )
+        logger.info(genMsg)
+        parsedHtml = getWebsiteHtmlAsBs4(url)
+        if parsedHtml is not None:
+            forms.append( parsedHtml.body.find(id="optionchain") )
+        elif parsedHtml is None:
+            logger.error(errMsg)
     
     
     stock = Stock()
@@ -80,6 +99,8 @@ def scraper(ticker):
         persistPrices(ticker, stock, optionChain, extractedOptions)
     else:
         savePricesToPickle(ticker, stock, optionChain, extractedOptions)
+        
+    return 'Successfully scraped ' + symbol
         
     
 def persistPrices(ticker, stock, optionChain, callsAndPutsMap):
@@ -178,12 +199,14 @@ def toFloat(value):
   try:
     f = float(value)
     return f
-  except ValueError:
+  except ValueError as vErr:
+    #logger.info(str(vErr))
     return 0.0
 
 def toInt(value):
   try:
     i = int(value)
     return i
-  except ValueError:
+  except ValueError as vErr:
+    #logger.info(str(vErr))
     return 0

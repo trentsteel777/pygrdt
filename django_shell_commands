@@ -1,6 +1,7 @@
 # imports for PyDev Shell
 from analysisportal.pricescrapers.nasdaqScraper import *
 from analysisportal.models import *
+from analysisportal.tasks import *
 from analysisportal.exchangeopenhours.nasdaqHours import *
 from analysisportal.cboedownloader.downloader import *
 
@@ -31,5 +32,16 @@ objs=readSavedPricesFromPickle('/home/trent/Workspace/django_virtual_environment
 # example usage of what's returned from pickle
 len(objs[0]['extractedOptions']['calls'])
 
+
+# test snippets
+from analysisportal.pricescrapers.nasdaqScraper import *
+from analysisportal.models import *
 enabledTickers = Ticker.objects.order_by().filter(enabled=True, watchlist__enabled__exact=True).distinct()
 
+for t in enabledTickers:
+	scraper(t)
+
+from analysisportal.pricescrapers.nasdaqScraper import *
+from analysisportal.models import *
+from analysisportal.tasks import *
+scrapeNasdaqWebsite()

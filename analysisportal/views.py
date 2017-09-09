@@ -13,7 +13,22 @@ def analyze(request):
 def grdt(request):
     return render(request, 'analysisportal/index.html', {})
 
-
+def jerryLee(request):
+    qd = getQd(request)
+    searchWatchlist = qd.__getitem__('watchlist')
+    watchlist = Watchlist.objects.get(name__exact=searchWatchlist)
+    searchDate = datetime.strptime(qd['searchDate'], "%m/%d/%Y").date()
+    
+    wl = Watchlist.objects.get(name=searchWatchlist)
+    wlTickers = wl.ticker_set.all().filter(enabled=True)
+    tickersTotal = wlTickers.count()
+    stocks = Stock.objects.filter(ticker__ticker__in=wlTickers, earningsDateStart=searchDate)
+    
+    
+    
+    
+    return JsonResponse(data)
+    
 def validate_username(request):
     username = request.GET.get('username', None)
     data = {

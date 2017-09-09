@@ -1,0 +1,18 @@
+#Ref: https://www.youtube.com/watch?v=1zCZukX--K8
+# I believe this tutorial worked because I ran the commands as root@odroid,
+# I'm not 100% sure but it seems to be working correctly now on the odroid
+
+sudo su postgres
+psql
+SHOW data_directory
+systemctl stop postgres
+systemctl status postgres
+sudo rsync -av /var/lib/postgresql /media/odroid/grdt_db_hd
+sudo mv /var/lib/postgresql/9.5.main /var/lib/postgresql/9.5.main.backup
+sudo nano /etc/postgresql/9.5/main/postgresql.conf
+#change data_directory to "/media/odroid/grdt_db_hd/postgresql/9.5/main"
+systemctl start postgres
+su postgres
+psql
+SHOW data_directory
+
