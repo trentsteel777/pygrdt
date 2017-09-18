@@ -1,0 +1,24 @@
+#Shell test code
+
+searchWatchlist = 'DEFAULT'
+wl = Watchlist.objects.get(name=searchWatchlist)
+wlTickers = wl.ticker_set.all().filter(enabled=True)
+wlTickersSymbolList = wlTickers.values_list('ticker', flat=True)
+tickersTotal = wlTickers.count()
+
+searchDate = datetime.strptime('09/09/2017', "%m/%d/%Y").date()
+searchHour = int(13)
+searchDate_from = datetime(searchDate.year, searchDate.month, searchDate.day, searchHour,0,0, tzinfo=timezone.utc)
+searchDate_to = datetime(searchDate.year, searchDate.month, searchDate.day, searchHour + 1, 0, 0, tzinfo=timezone.utc)
+    
+    
+stocks = Stock.objects.filter(ticker__ticker__in=wlTickersSymbolList, timestamp__gte=searchDate_from, timestamp__lt=searchDate_to)
+
+from decimal import Decimal as D
+s.optionchain.option_set.filter(optionType=Option.PUT, strike__gte=(s.price * D(0.75)), strike__lte=(s.price * D(0.85)) )
+
+
+double strike = Double.parseDouble(putCol[2]);
+if(strike <= (stockPrice * 0.85) && strike >= (stockPrice * 0.75) && (bSplit[7].indexOf(ticker + "W") == -1) && (bSplit[7].indexOf(nextMonth(currentMonth)) != -1) && (bSplit[7].indexOf("-") == -1) ) {
+ 	output.println(b + Double.toString(stockPrice) + "," + ticker + "," + strike); 
+}

@@ -4,6 +4,7 @@ import sys
 from .models import *
 from datetime import *
 from sqlalchemy.sql.expression import false
+from decimal import Decimal as D
 
 # Create your views here.
 
@@ -13,20 +14,52 @@ def analyze(request):
 def grdt(request):
     return render(request, 'analysisportal/index.html', {})
 
-def jerryLee(request):
+def strategyJerryLee(request):
     qd = getQd(request)
-    searchWatchlist = qd.__getitem__('watchlist')
-    watchlist = Watchlist.objects.get(name__exact=searchWatchlist)
-    searchDate = datetime.strptime(qd['searchDate'], "%m/%d/%Y").date()
     
+    searchWatchlist = qd.__getitem__('watchlist')
     wl = Watchlist.objects.get(name=searchWatchlist)
     wlTickers = wl.ticker_set.all().filter(enabled=True)
+    wlTickersSymbolList = wlTickers.values_list('ticker', flat=True)
     tickersTotal = wlTickers.count()
-    stocks = Stock.objects.filter(ticker__ticker__in=wlTickers, earningsDateStart=searchDate)
     
+    searchDate = datetime.strptime(qd['searchDate'], "%m/%d/%Y").date()
+    searchHour = int(qd['hour'])
+    searchDate_from = datetime(searchDate.year, searchDate.month, searchDate.day, searchHour,0,0, tzinfo=timezone.utc)
+    searchDate_to = datetime(searchDate.year, searchDate.month, searchDate.day, searchHour + 1, 0, 0, tzinfo=timezone.utc)
     
+    start = (int(qd.__getitem__('start')))
+    limit = (start + int(qd.__getitem__('limit')))
     
+    stocks = Stock.objects.filter(ticker__ticker__in=wlTickersSymbolList, timestamp__gte=searchDate_from, timestamp__lt=searchDate_to)[start : limit]
     
+    optionsList = []
+    for s in stocks:
+        optionsList.extend( s.optionchain.option_set.filter(optionType=Option.PUT, strike__gte=(s.price * D(0.75)), strike__lte=(s.price * D(0.85)) ) )
+    
+    optionsTotal = len(optionsList)
+    optionsList = optionsList[start : limit]
+    
+    optionsJsonArr = []
+    for o in optionsList:
+        optionsJsonArr.append({
+            'putOptionType': o.optionType,
+            'putNasdaqName': o.nasdaqName,
+            'putContractName': o.contractName,
+            'putLast': o.last,
+            'putChange': o.change,
+            'putBid': o.bid,
+            'putAsk': o.ask,
+            'putVolume': o.volume,
+            'putOpenInterest': o.openInterest,
+            'putStrike': o.strike,
+            'stockPrice': o.optionChain.stock.price,
+            'earningsDate': o.optionChain.stock.earningsDateStart,
+            
+        })
+          
+    data = { 'options' : optionsJsonArr, 'optionsTotal' : optionsTotal }
+
     return JsonResponse(data)
     
 def validate_username(request):
@@ -115,9 +148,15 @@ def getOptionChain(request):
     #options = Option.objects.all().order_by('strike')[start:limit]
     #optionTotal = Option.objects.count() / 2
     
+    searchTicker = qd['ticker']
+    
     searchDate = datetime.strptime(qd['searchDate'], "%m/%d/%Y").date()
-    hour = int(qd['hour'])
-    stockList = Stock.objects.filter(timestamp__date=searchDate, timestamp__hour=hour)[:2] 
+    searchHour = int(qd['hour'])
+    searchDate_from = datetime(searchDate.year, searchDate.month, searchDate.day, searchHour,0,0, tzinfo=timezone.utc)
+    searchDate_to = datetime(searchDate.year, searchDate.month, searchDate.day, searchHour + 1, 0, 0, tzinfo=timezone.utc)
+    
+    stockList = Stock.objects.filter(ticker__ticker=searchTicker, timestamp__gte=searchDate_from, timestamp__lt=searchDate_to)
+    
     stock = None
     if len(stockList) > 0:
         #limit to 1 because the data is 60 times an hour instead of once an hour!
@@ -130,8 +169,8 @@ def getOptionChain(request):
     success = False
     
     if stock != None:
-        options = stock.optionchain_set.get().option_set.all()[start:limit]
-        optionTotal = options.count() / 2
+        options = stock.optionchain.option_set.all()[start:limit]
+        optionTotal = stock.optionchain.option_set.count() / 2
         
         if len(options) > 0:
             msg = 'Data found for date and time'

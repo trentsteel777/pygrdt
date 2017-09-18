@@ -31,8 +31,10 @@ class Stock(models.Model):
 class OptionChain(models.Model):
 
     expirationType = models.CharField(max_length=30) # monthly or whatever
-    
-    stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
+    stock = models.OneToOneField(
+        Stock,
+        on_delete=models.CASCADE,
+    )
     
     def saveToPickle(self):
         fileName = self.toFileName()
