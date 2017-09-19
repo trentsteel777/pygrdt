@@ -75,6 +75,7 @@ sudo systemctl start lightdm.service
 # Make sure rabbitmq is installed on the host and configured (replace "myuser" as appropriate).
 # PYGRDT uses what's below as is (i.e. No changes were made to below commands).
 # The below configuration is reflected in the rabbitmq url that is in the settings.py file. 
+#Ref: https://tests4geeks.com/python-celery-rabbitmq-tutorial/
 sudo apt-get install rabbitmq-server
 which rabbitmq-server
 sudo rabbitmqctl add_user myuser mypassword
