@@ -65,6 +65,14 @@ var jerryLeeSearchBar = Ext.create('Ext.form.Panel', {
 Ext.define('JerryLeeModel', {
      extend: 'Ext.data.Model',
      fields: [
+     
+        {name: 'ticker',         type: 'string'},
+        {name: 'marginOfSafety',   type: 'number'},
+        {name: 'return',   type: 'number'},
+        {name: 'margin', type: 'number'},
+        {name: 'exposure',         type: 'number'},
+        {name: 'earningsDate',         type: 'date'},
+        
         {name: 'putOptionType',   type: 'string'},
         {name: 'putNasdaqName',   type: 'string'},
         {name: 'putContractName', type: 'string'},
@@ -106,14 +114,32 @@ Ext.define('JerryLeeModel', {
      }
 });
 
+var toDecimal = function(value) {
+    return (value * 100).toFixed(2);
+};
+
 var jerryLeeGrid = Ext.create('Ext.grid.Panel', {
     store:Ext.data.StoreManager.lookup('jerryLeeStore'), 
     width: '100%',
     height: '100%',
     columns: [
         //{ text: 'optionType', dataIndex: 'putOptionType', flex:0.5 },
+        
+        { text: 'Ticker', dataIndex: 'ticker' , flex:0.5},
         { text: 'Puts', dataIndex: 'putNasdaqName' , flex:0.6},
         { text: 'Strike', dataIndex: 'putStrike' , flex:0.5}, // already displayed by callStrike as they are the same
+        
+        { text: 'MOS (%)', dataIndex: 'marginOfSafety', flex:0.6, renderer: toDecimal, 
+        tooltip: new Ext.tip.ToolTip({
+            target: this,
+            html: 'Margin of Safety'
+        })
+        },
+        { text: 'Return (%)', dataIndex: 'return' , flex:0.6, renderer: toDecimal, },
+        { text: 'Margin ($)', dataIndex: 'margin' , flex:0.6},
+        { text: 'Exposure', dataIndex: 'exposure' , flex:0.6},
+        { text: 'Earnings', formatter:'date("Y-m-d")',dataIndex: 'earningsDate' , flex:0.6 },
+        
         //{ text: 'contractName', dataIndex: 'putContractName', flex:0.5 },
         { text: 'Last', dataIndex: 'putLast' , flex:0.5},
         { text: 'Change', dataIndex: 'putChange' , flex:0.4},

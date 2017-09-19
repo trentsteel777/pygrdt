@@ -39,10 +39,27 @@ def strategyJerryLee(request):
     
     optionsTotal = len(optionsList)
     optionsList = optionsList[start : limit]
+    sharesPerContract = 100
     
     optionsJsonArr = []
     for o in optionsList:
+        
+        stockPrice = o.optionChain.stock.price
+        putStrike = o.strike
+        
+        marginOfSafety = (stockPrice - putStrike) / stockPrice
+        returnOnOption = o.bid / ((putStrike * D(0.1)) + o.bid)
+        marginPerContract = ((putStrike * D(0.1)) + o.bid) * sharesPerContract
+        exposurePerContract = stockPrice * sharesPerContract
+        
         optionsJsonArr.append({
+            'ticker' : o.optionChain.stock.ticker.ticker,
+            'marginOfSafety':marginOfSafety,
+            'return': returnOnOption,
+            'margin': marginPerContract,
+            'exposure': exposurePerContract,
+            'earningsDate': o.optionChain.stock.earningsDateStart,
+
             'putOptionType': o.optionType,
             'putNasdaqName': o.nasdaqName,
             'putContractName': o.contractName,
@@ -52,8 +69,8 @@ def strategyJerryLee(request):
             'putAsk': o.ask,
             'putVolume': o.volume,
             'putOpenInterest': o.openInterest,
-            'putStrike': o.strike,
-            'stockPrice': o.optionChain.stock.price,
+            'putStrike': putStrike,
+            'stockPrice': stockPrice,
             'earningsDate': o.optionChain.stock.earningsDateStart,
             
         })
