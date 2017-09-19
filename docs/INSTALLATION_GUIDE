@@ -72,3 +72,13 @@ sudo systemctl disable lightdm.service
 # To start GUI from command line:
 sudo systemctl start lightdm.service
 
+# Make sure rabbitmq is installed on the host and configured (replace "myuser" as appropriate).
+# PYGRDT uses what's below as is (i.e. No changes were made to below commands).
+# The below configuration is reflected in the rabbitmq url that is in the settings.py file. 
+sudo apt-get install rabbitmq-server
+which rabbitmq-server
+sudo rabbitmqctl add_user myuser mypassword
+sudo rabbitmqctl add_vhost myvhost
+sudo rabbitmqctl set_user_tags myuser mytag
+sudo rabbitmqctl set_permissions -p myvhost myuser ".*" ".*" ".*"
+sudo rabbitmqctl list_users
