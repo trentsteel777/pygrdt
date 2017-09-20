@@ -9,6 +9,7 @@ import pickle
 import os, sys
 import logging
 from celery.utils import objects
+from functools import reduce
 
 DEBUG_MODE = False
 logger = logging.getLogger(__name__)
@@ -45,7 +46,8 @@ def scraper(ticker):
     symbol = ticker.ticker
     earningsDateStart, earningsDateEnd  = getEarningsDateFromYahoo(symbol)
     
-    url = "http://www.nasdaq.com/symbol/" + symbol + "/option-chain?money=all&expir=stan&page=1"
+    url = "http://www.nasdaq.com/symbol/" + symbol + "/option-chain?money=all&expir=stan&dateindex=-1&page=1"
+
     errMsg = 'Failed to scrape option prices for ' + url
     
     genMsg = 'scraping for: ' + url
@@ -61,13 +63,17 @@ def scraper(ticker):
     except AttributeError as aErr:
         logger.error('scraper( ' + symbol.upper() + ' ). Could not get price. May be an invalid symbol. Error message: ' + str(aErr))
         return symbol + ' -> Could not get price. May be an invalid symbol.'
-        
+    
     subsequentPages = []
     pager = parsedHtml.find(id='pager').find_all('a')
-    for a in pager:
-        if a.text.isnumeric():
-            subsequentPages.append( a['href'] )
     
+    # Find inner text of pager anchor links, filter out non number ones, turn them from strings to ints, find max value as this is the last page
+    lastPage = reduce(lambda a,b: a if (a > b) else b, map(int, filter(lambda x : x.isnumeric(),map(lambda a : a.text, pager))))
+    
+    # Start at page two as page 1 has already been loaded
+    for i in range(2,lastPage + 1):
+        subsequentPages.append(url.replace('&page=1', '&page=' + str(i)))
+        
     forms = [ parsedHtml.body.find(id="optionchain") ]
     for url in subsequentPages:
         logger.info(genMsg)
@@ -167,30 +173,31 @@ def extractOptions(trList):
     puts = []
     for tr in trList:
         tdList = tr.find_all('td')
-        call = Option()
-        call.optionType = 'CALL'
-        call.nasdaqName   = tdList[callNameIndex]               .text
-        call.last         = toFloat( tdList[callLastIndex]      .text )
-        call.change       = toFloat( tdList[callChangeIndex]    .text )
-        call.bid          = toFloat( tdList[callBidIndex]       .text )
-        call.ask          = toFloat( tdList[callAskIndex]       .text )
-        call.volume       = toInt( tdList[callVolumeIndex]      .text )
-        call.openInterest = toInt( tdList[callOpenInterestIndex].text )
-        call.strike       = toFloat( tdList[strikeIndex]        .text )
-        
-        put = Option()
-        put.optionType = 'PUT'
-        put.nasdaqName   = tdList[putNameIndex]               .text
-        put.last         = toFloat( tdList[putLastIndex]      .text )
-        put.change       = toFloat( tdList[putChangeIndex]    .text )
-        put.bid          = toFloat( tdList[putBidIndex]       .text )
-        put.ask          = toFloat( tdList[putAskIndex]       .text )
-        put.volume       = toInt( tdList[putVolumeIndex]      .text )
-        put.openInterest = toInt( tdList[putOpenInterestIndex].text )
-        put.strike       = toFloat( tdList[strikeIndex]       .text )
-        
-        calls.append(call)
-        puts.append(put)
+        if len(tdList) == 16:
+            call = Option()
+            call.optionType = 'CALL'
+            call.nasdaqName   = tdList[callNameIndex]               .text
+            call.last         = toFloat( tdList[callLastIndex]      .text )
+            call.change       = toFloat( tdList[callChangeIndex]    .text )
+            call.bid          = toFloat( tdList[callBidIndex]       .text )
+            call.ask          = toFloat( tdList[callAskIndex]       .text )
+            call.volume       = toInt( tdList[callVolumeIndex]      .text )
+            call.openInterest = toInt( tdList[callOpenInterestIndex].text )
+            call.strike       = toFloat( tdList[strikeIndex]        .text )
+            
+            put = Option()
+            put.optionType = 'PUT'
+            put.nasdaqName   = tdList[putNameIndex]               .text
+            put.last         = toFloat( tdList[putLastIndex]      .text )
+            put.change       = toFloat( tdList[putChangeIndex]    .text )
+            put.bid          = toFloat( tdList[putBidIndex]       .text )
+            put.ask          = toFloat( tdList[putAskIndex]       .text )
+            put.volume       = toInt( tdList[putVolumeIndex]      .text )
+            put.openInterest = toInt( tdList[putOpenInterestIndex].text )
+            put.strike       = toFloat( tdList[strikeIndex]       .text )
+            
+            calls.append(call)
+            puts.append(put)
         
     return calls, puts
         
