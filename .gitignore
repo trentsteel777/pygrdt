@@ -13,3 +13,5 @@ include
 TODO/
 analysisportal/pricescrapers/data/
 selenium
+logs/scraper/*
+logs/*
