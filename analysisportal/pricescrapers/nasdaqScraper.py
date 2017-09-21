@@ -65,14 +65,18 @@ def scraper(ticker):
         return symbol + ' -> Could not get price. May be an invalid symbol.'
     
     subsequentPages = []
-    pager = parsedHtml.find(id='pager').find_all('a')
-    
-    # Find inner text of pager anchor links, filter out non number ones, turn them from strings to ints, find max value as this is the last page
-    lastPage = reduce(lambda a,b: a if (a > b) else b, map(int, filter(lambda x : x.isnumeric(),map(lambda a : a.text, pager))))
-    
-    # Start at page two as page 1 has already been loaded
-    for i in range(2,lastPage + 1):
-        subsequentPages.append(url.replace('&page=1', '&page=' + str(i)))
+    try:
+        pager = parsedHtml.find(id='pager').find_all('a')
+    except Exception as err:
+        pager = []
+        logger.warn('scraper( ' + symbol.upper() + ' ). Could not find pager on page, assuming there is only one page of option information: ' + str(aErr))
+        
+    if pager:
+        # Find inner text of pager anchor links, filter out non number ones, turn them from strings to ints, find max value as this is the last page
+        lastPage = reduce(lambda a,b: a if (a > b) else b, map(int, filter(lambda x : x.isnumeric(),map(lambda a : a.text, pager))))
+        # Start at page two as page 1 has already been loaded
+        for i in range(2,lastPage + 1):
+            subsequentPages.append(url.replace('&page=1', '&page=' + str(i)))
         
     forms = [ parsedHtml.body.find(id="optionchain") ]
     for url in subsequentPages:
@@ -167,7 +171,6 @@ putOpenInterestIndex = 15
 
 
 
-
 def extractOptions(trList):
     calls = []
     puts = []
@@ -177,6 +180,7 @@ def extractOptions(trList):
             call = Option()
             call.optionType = 'CALL'
             call.nasdaqName   = tdList[callNameIndex]               .text
+            call.contractName = getContractName(tdList[callNameIndex].a['href'])
             call.last         = toFloat( tdList[callLastIndex]      .text )
             call.change       = toFloat( tdList[callChangeIndex]    .text )
             call.bid          = toFloat( tdList[callBidIndex]       .text )
@@ -188,6 +192,7 @@ def extractOptions(trList):
             put = Option()
             put.optionType = 'PUT'
             put.nasdaqName   = tdList[putNameIndex]               .text
+            put.contractName = getContractName(tdList[putNameIndex].a['href'])
             put.last         = toFloat( tdList[putLastIndex]      .text )
             put.change       = toFloat( tdList[putChangeIndex]    .text )
             put.bid          = toFloat( tdList[putBidIndex]       .text )
@@ -200,7 +205,19 @@ def extractOptions(trList):
             puts.append(put)
         
     return calls, puts
-        
+
+def getContractName(urlWithContractName):
+    try:
+        token = '/option-chain/'
+        index = urlWithContractName.index(token)
+        urlEnd = u[ index + len(token):]
+        arr = urlEnd.split('-')
+        contractName = (arr[1] + arr[0]).upper()
+        return contractName   
+    except Exception as err:
+        logger.warn('scraper(?). Could not parse contractName from nasdaqName url: ' + urlWithContractName + ' : ' + str(aErr))
+        return None
+    
 # could be better validation around these helper methods
 def toFloat(value):
   try:
