@@ -1,9 +1,94 @@
+var NO_DATA = 'NO_DATA';
+var applyJerryLeeSearchBarValuesToParams = function(store, operation, eOpts) {
+    var formData = Ext.getCmp('jerryLeeSearchBar').getForm().getValues();
+    Ext.apply(operation._proxy.extraParams, formData);
+};
+
+var resetOptionExpiryStoreAndSearchButton = function(){
+    Ext.data.StoreManager.lookup('jerryLeeOptionExpiryStore').removeAll();
+    Ext.getCmp('jerryLeeSearchButton').setDisabled(true);
+    Ext.getCmp('jerryLeeOptionExpiryComboBox').clearValue();
+}; 
+
+var jerryLeeOptionExpiryStore = Ext.create('Grdt.optionexpiry.Store',{
+    storeId: 'jerryLeeOptionExpiryStore',
+    listeners: {
+    
+        beforeload: applyJerryLeeSearchBarValuesToParams, 
+         
+        load: function(thiz, records, successful, operation, eOpts ) {
+          var store = thiz;
+          var comboBox = Ext.getCmp('jerryLeeOptionExpiryComboBox');
+          // On screen load default watchlist combobox to DEFAULT watchlist
+          if(successful) {
+            var searchButton = Ext.getCmp('jerryLeeSearchButton');
+            if(!records.length) {
+              comboBox.setRawValue(NO_DATA);
+              searchButton.setDisabled(true);
+            }
+            else {
+              // second record should be month ahead, which is normally what we are searching for 
+              // with Jerry Lee strategy
+              if(records.length >= 3) {
+                comboBox.setRawValue(records[2].data.expiry);
+              }
+              searchButton.setDisabled(false);
+            }
+          }
+        }
+    }
+});
+
+
+var jl_searchBarChanges = function() {
+    var oldWatchlist;
+    var oldDate;
+    var oldHour;
+    
+    return {
+      isChanged: function() {
+        var newWatchlist = Ext.getCmp('jerryLeeWatchlistComboBox').getValue();
+        var newDate = Ext.getCmp('jerryLeeDatePicker').getValue();
+        var newHour = Ext.getCmp('jerryLeeTimeComboBox').getValue(); 
+        
+        return  (
+            (oldWatchlist !== newWatchlist) ||
+            (oldDate !== newDate) ||
+            (oldHour !== newHour) )
+            
+      },
+      update: function() {
+        oldWatchlist = Ext.getCmp('jerryLeeWatchlistComboBox').getValue();
+        oldDate = Ext.getCmp('jerryLeeDatePicker').getValue();
+        oldHour = Ext.getCmp('jerryLeeTimeComboBox').getValue(); 
+      }
+    };
+    
+}();
+
+var jerryLeeOptionExpiryComboBox = Ext.create('Grdt.optionexpiry.ComboBox', {
+    id: 'jerryLeeOptionExpiryComboBox',
+    store: jerryLeeOptionExpiryStore,
+    editable: false,
+    lastQuery: '',
+    listeners: {
+        // delete the previous query in the beforequery event or set
+        // combo.lastQuery = null (this will reload the store the next time it expands)
+        beforequery: function(qe){
+            if(jl_searchBarChanges.isChanged()) {
+              delete qe.combo.lastQuery;
+              jl_searchBarChanges.update();
+            }
+        }
+    }
+});
+
 var jerryLeeWatchlistStore = Ext.create('Grdt.watchlist.Store',{
     storeId: 'jerryLeeWatchlistStore',
     listeners : {
         load: function(thiz, records, successful, operation, eOpts ) {
           var store = thiz;
-          var comboBox = Ext.getCmp('jerryLeeWatchlistComboBox');;
+          var comboBox = Ext.getCmp('jerryLeeWatchlistComboBox');
           // On screen load default watchlist combobox to DEFAULT watchlist
           if(successful) {
             if(!comboBox.getValue()) {
@@ -11,7 +96,8 @@ var jerryLeeWatchlistStore = Ext.create('Grdt.watchlist.Store',{
               comboBox.setValue(records[tickerIndex]);
             }
           }
-        }
+        },
+        change: resetOptionExpiryStoreAndSearchButton,
     }
 });
 
@@ -23,20 +109,30 @@ var jerryLeeWatchlistComboBox = Ext.create('Grdt.watchlist.ComboBox', {
 
 var jerryLeeDatePicker = {
             xtype: 'datefield',
+            id :'jerryLeeDatePicker',
             fieldLabel: 'Date',
             name:'searchDate',
             labelAlign:'right',
             value: new Date(),
+            listeners: {
+                change: resetOptionExpiryStoreAndSearchButton,
+            }
         };
         
 var jerryLeeTimeComboBox = Ext.create('Grdt.time.ComboBox', {
     id: 'jerryLeeTimeComboBox',
+    listeners: {
+        change: resetOptionExpiryStoreAndSearchButton,
+    }
 });
         
 var jerryLeeSearchButton = Ext.create('Ext.Button', {
+    id :'jerryLeeSearchButton',
     text: 'GO',
+    disabled: true,
+    autoLoad: false,
     handler: function() {
-            Ext.data.StoreManager.lookup('jerryLeeStore').load();
+        Ext.data.StoreManager.lookup('jerryLeeStore').load();
     }
 });
 
@@ -55,6 +151,7 @@ var jerryLeeSearchBar = Ext.create('Ext.form.Panel', {
         jerryLeeWatchlistComboBox,
         jerryLeeDatePicker,
         jerryLeeTimeComboBox,
+        jerryLeeOptionExpiryComboBox,
         {  
             xtype: 'tbspacer', width:15,
         },
@@ -100,17 +197,11 @@ Ext.define('JerryLeeModel', {
          },
          extraParams: {
             action: 'strategyJerryLee',
-            //watchlist: Ext.getCmp('jerryLeeWatchlistComboBox').getValue(),
-            //hour: Ext.getCmp('jerryLeeTimeComboBox').getValue(),
-            //searchDate:,
         },
      },
      autoLoad: false,
      listeners: {
-         beforeload: function(store, operation, eOpts) {
-            var formData = Ext.getCmp('jerryLeeSearchBar').getForm().getValues();
-            Ext.apply(operation._proxy.extraParams, formData);
-         }
+         beforeload: applyJerryLeeSearchBarValuesToParams,
      }
 });
 

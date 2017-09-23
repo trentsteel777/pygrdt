@@ -14,6 +14,40 @@ def analyze(request):
 def grdt(request):
     return render(request, 'analysisportal/index.html', {})
 
+def optionExpiriesList(request):
+    qd = getQd(request)
+    
+    searchWatchlist = qd.__getitem__('watchlist')
+    wl = Watchlist.objects.get(name=searchWatchlist)
+    wlTickers = wl.ticker_set.all().filter(enabled=True)
+    wlTickersSymbolList = wlTickers.values_list('ticker', flat=True)
+    
+    searchDate = datetime.strptime(qd['searchDate'], "%m/%d/%Y").date()
+    searchHour = int(qd['hour'])
+    searchDate_from = datetime(searchDate.year, searchDate.month, searchDate.day, searchHour,0,0, tzinfo=timezone.utc)
+    searchDate_to = datetime(searchDate.year, searchDate.month, searchDate.day, searchHour + 1, 0, 0, tzinfo=timezone.utc)
+  
+    expiryList = Option.objects.filter(optionChain__stock__ticker__ticker__in=wlTickersSymbolList, 
+                                       optionChain__stock__timestamp__gte=searchDate_from,  
+                                       optionChain__stock__timestamp__lt=searchDate_to).values_list('nasdaqName', flat=True).distinct()
+                                      
+    expiryList = list(filter(None, expiryList)) # Remove any empty strings
+    expiryList = sorted(expiryList, key=lambda x: datetime.strptime(x, '%b %d, %Y'))
+    
+    expiryJsonList = []
+    
+    for e in expiryList:
+        expiryJsonList.append({
+                'expiry' : e,
+            })
+    if expiryJsonList:
+        expiryJsonList.insert( 0, {'expiry' : 'ALL'})
+        
+    
+    data = { 'expiryList' : expiryJsonList, 'expiryListTotal' : len(expiryJsonList) }
+
+    return JsonResponse(data)
+
 def strategyJerryLee(request):
     qd = getQd(request)
     
@@ -31,11 +65,16 @@ def strategyJerryLee(request):
     start = (int(qd.__getitem__('start')))
     limit = (start + int(qd.__getitem__('limit')))
     
-    stocks = Stock.objects.filter(ticker__ticker__in=wlTickersSymbolList, timestamp__gte=searchDate_from, timestamp__lt=searchDate_to)[start : limit]
+    stocks = Stock.objects.filter(ticker__ticker__in=wlTickersSymbolList, timestamp__gte=searchDate_from, timestamp__lt=searchDate_to)
+    
+    expiry = qd['expiry']
     
     optionsList = []
     for s in stocks:
-        optionsList.extend( s.optionchain.option_set.filter(optionType=Option.PUT, strike__gte=(s.price * D(0.75)), strike__lte=(s.price * D(0.85)) ) )
+        filters = {'optionType': Option.PUT, 'strike__gte': (s.price * D(0.75)), 'strike__lte': (s.price * D(0.85)) }
+        if expiry != 'ALL':
+            filters['nasdaqName'] = expiry
+        optionsList.extend( s.optionchain.option_set.filter(**filters) )
     
     optionsTotal = len(optionsList)
     optionsList = optionsList[start : limit]

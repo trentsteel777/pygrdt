@@ -138,3 +138,51 @@ Ext.define('Grdt.time.ComboBox', {
         });
     },
 });
+
+/* 
+   OptionExpiry
+*/
+
+Ext.define('Grdt.model.OptionExpiry', {
+     extend: 'Ext.data.Model',
+     fields: [
+        {name: 'expiry',   type: 'string'},
+     ]
+ });
+ 
+Ext.define('Grdt.optionexpiry.Store', {
+    extend: 'Ext.data.Store',
+    
+    requires: ['Ext.data.Store'],
+    
+    model: 'Grdt.model.OptionExpiry',
+    pageSize: GRID_PAGE_SIZE, // calls and puts get combined into one line per strike
+     proxy: {
+         type: 'ajax',
+         url: PORTAL_URL,
+         reader: {
+             type: 'json',
+             rootProperty: 'expiryList',
+             totalProperty: 'expiryListTotal',
+         },
+         extraParams: {
+            action: 'optionExpiriesList'
+        },
+     },
+    autoLoad: true,
+     
+});
+
+Ext.define('Grdt.optionexpiry.ComboBox', {
+    extend: 'Ext.form.ComboBox',
+    
+    requires: ['Ext.form.ComboBox'],
+    
+    fieldLabel: 'Expiry',
+    labelAlign:'right',
+    queryMode: 'remote',
+    name: 'expiry',
+    displayField: 'expiry',
+    valueField: 'expiry',
+});
+
