@@ -132,7 +132,7 @@ var jerryLeeSearchButton = Ext.create('Ext.Button', {
     disabled: true,
     autoLoad: false,
     handler: function() {
-        Ext.data.StoreManager.lookup('jerryLeeStore').load();
+        Ext.data.StoreManager.lookup('jerryLeeStore').loadPage(1);
     }
 });
 
@@ -171,7 +171,7 @@ Ext.define('JerryLeeModel', {
         {name: 'earningsDate',         type: 'date'},
         
         {name: 'putOptionType',   type: 'string'},
-        {name: 'putNasdaqName',   type: 'string'},
+        {name: 'putExpiry',   type: 'string'},
         {name: 'putContractName', type: 'string'},
         {name: 'putLast',         type: 'number'},
         {name: 'putChange',       type: 'number'},
@@ -186,6 +186,7 @@ Ext.define('JerryLeeModel', {
  var jerryLeeStore = Ext.create('Ext.data.Store', {
     storeId: 'jerryLeeStore',
     model: 'JerryLeeModel',
+    remoteSort: true,
     pageSize:GRID_PAGE_SIZE, // calls and puts get combined into one line per strike
      proxy: {
          type: 'ajax',
@@ -217,14 +218,18 @@ var jerryLeeGrid = Ext.create('Ext.grid.Panel', {
         //{ text: 'optionType', dataIndex: 'putOptionType', flex:0.5 },
         
         { text: 'Ticker', dataIndex: 'ticker' , flex:0.5},
-        { text: 'Puts', dataIndex: 'putNasdaqName' , flex:0.6},
+        { text: 'Puts', dataIndex: 'putExpiry' , flex:0.6},
         { text: 'Strike', dataIndex: 'putStrike' , flex:0.5}, // already displayed by callStrike as they are the same
         
-        { text: 'MOS (%)', dataIndex: 'marginOfSafety', flex:0.6, renderer: toDecimal, 
-        tooltip: new Ext.tip.ToolTip({
-            target: this,
-            html: 'Margin of Safety'
-        })
+        { id:'mosCol', text: 'MOS (%)', dataIndex: 'marginOfSafety', flex:0.6, renderer: toDecimal, 
+        listeners:{
+            afterrender: function(thiz) {
+                new Ext.tip.ToolTip({
+                    target: thiz.getId(),
+                    html: 'Margin of Safety'
+                })
+            }
+        },
         },
         { text: 'Return (%)', dataIndex: 'return' , flex:0.6, renderer: toDecimal, },
         { text: 'Margin ($)', dataIndex: 'margin' , flex:0.6},
@@ -247,7 +252,12 @@ var jerryLeeGrid = Ext.create('Ext.grid.Panel', {
         displayInfo: true,
         height:50,
         displayMsg: 'Displaying Puts {0} - {1} of {2}',
-        emptyMsg: "No data to display"
+        emptyMsg: "No data to display",
+        listeners: {
+            afterrender: function(thiz) {
+                thiz.down('#refresh').hide();
+            }
+        }
     }),
 });
 

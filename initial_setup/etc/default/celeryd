@@ -1,4 +1,5 @@
-CELERYD_NODES="worker1 worker2 worker3 worker4 worker5 worker6 worker7 worker8"
+# nasdaq will block your IP if you scrape it too quickly by having too many workers
+CELERYD_NODES="worker1 worker2 worker3"
 
 CELERY_BIN="~/venvs/pygrdt/bin/celery"
 

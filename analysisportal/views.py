@@ -5,6 +5,7 @@ from .models import *
 from datetime import *
 from sqlalchemy.sql.expression import false
 from decimal import Decimal as D
+from django.db.models import F
 
 # Create your views here.
 
@@ -29,7 +30,7 @@ def optionExpiriesList(request):
   
     expiryList = Option.objects.filter(optionChain__stock__ticker__ticker__in=wlTickersSymbolList, 
                                        optionChain__stock__timestamp__gte=searchDate_from,  
-                                       optionChain__stock__timestamp__lt=searchDate_to).values_list('nasdaqName', flat=True).distinct()
+                                       optionChain__stock__timestamp__lt=searchDate_to).values_list('expiry', flat=True).distinct()
                                       
     expiryList = list(filter(None, expiryList)) # Remove any empty strings
     expiryList = sorted(expiryList, key=lambda x: datetime.strptime(x, '%b %d, %Y'))
@@ -53,6 +54,7 @@ def strategyJerryLee(request):
     
     searchWatchlist = qd.__getitem__('watchlist')
     wl = Watchlist.objects.get(name=searchWatchlist)
+    
     wlTickers = wl.ticker_set.all().filter(enabled=True)
     wlTickersSymbolList = wlTickers.values_list('ticker', flat=True)
     tickersTotal = wlTickers.count()
@@ -62,24 +64,28 @@ def strategyJerryLee(request):
     searchDate_from = datetime(searchDate.year, searchDate.month, searchDate.day, searchHour,0,0, tzinfo=timezone.utc)
     searchDate_to = datetime(searchDate.year, searchDate.month, searchDate.day, searchHour + 1, 0, 0, tzinfo=timezone.utc)
     
+    expiry = qd['expiry']
+    
     start = (int(qd.__getitem__('start')))
     limit = (start + int(qd.__getitem__('limit')))
     
-    stocks = Stock.objects.filter(ticker__ticker__in=wlTickersSymbolList, timestamp__gte=searchDate_from, timestamp__lt=searchDate_to)
     
-    expiry = qd['expiry']
-    
-    optionsList = []
-    for s in stocks:
-        filters = {'optionType': Option.PUT, 'strike__gte': (s.price * D(0.75)), 'strike__lte': (s.price * D(0.85)) }
-        if expiry != 'ALL':
-            filters['nasdaqName'] = expiry
-        optionsList.extend( s.optionchain.option_set.filter(**filters) )
-    
-    optionsTotal = len(optionsList)
-    optionsList = optionsList[start : limit]
+    filters = { 
+        'optionChain__stock__ticker__ticker__in': wlTickersSymbolList,
+        'optionChain__stock__timestamp__gte'    : searchDate_from,
+        'optionChain__stock__timestamp__lt'     : searchDate_to,
+        
+        'optionType' : Option.PUT, 
+        'strike__gte' : F('optionChain__stock__price') * D(0.75), 
+        'strike__lte' : F('optionChain__stock__price') * D(0.85), 
+    }
+    if expiry != 'ALL':
+        filters['expiry'] = expiry
+        
+    optionsList = Option.objects.filter(**filters).order_by('optionChain__stock__ticker__ticker','','')[start : limit]
+    optionsTotal = Option.objects.filter(**filters).count()
+
     sharesPerContract = 100
-    
     optionsJsonArr = []
     for o in optionsList:
         
@@ -100,7 +106,7 @@ def strategyJerryLee(request):
             'earningsDate': o.optionChain.stock.earningsDateStart,
 
             'putOptionType': o.optionType,
-            'putNasdaqName': o.nasdaqName,
+            'putExpiry': o.expiry
             'putContractName': o.contractName,
             'putLast': o.last,
             'putChange': o.change,
@@ -127,7 +133,7 @@ def validate_username(request):
     data = {
            'optionChain' : [{
            'optionType': 'CALL',
-           'nasdaqName': 'July, 2017',
+           'expiry': 'July, 2017',
            'contractName': '',
            'last': 4.53,
            'change': 0.12,
@@ -242,7 +248,7 @@ def getOptionChain(request):
                 put = options[i]
             optionArr.append({
                 'callOptionType': call.optionType,
-                'callNasdaqName': call.nasdaqName,
+                'callExpiry': call.expiry,
                 'callContractName': call.contractName,
                 'callLast': call.last,
                 'callChange': call.change,
@@ -253,7 +259,7 @@ def getOptionChain(request):
                 'callStrike': call.strike,
                 
                 'putOptionType': put.optionType,
-                'putNasdaqName': put.nasdaqName,
+                'putExpiry': put.expiry,
                 'putContractName': put.contractName,
                 'putLast': put.last,
                 'putChange': put.change,

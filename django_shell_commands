@@ -33,15 +33,16 @@ objs=readSavedPricesFromPickle('/home/trent/Workspace/django_virtual_environment
 len(objs[0]['extractedOptions']['calls'])
 
 
-# test snippets
-from analysisportal.pricescrapers.nasdaqScraper import *
-from analysisportal.models import *
-enabledTickers = Ticker.objects.order_by().filter(enabled=True, watchlist__enabled__exact=True).distinct()
+# test if prices were scraped today
+Stock.objects.filter(timestamp__date=date.today())
 
-for t in enabledTickers:
-	scraper(t)
 
-from analysisportal.pricescrapers.nasdaqScraper import *
-from analysisportal.models import *
-from analysisportal.tasks import *
-scrapeNasdaqWebsite()
+# check what scraper didn't scrape (assuming only one day of data in database)
+stocks = Stock.objects.values_list('ticker__ticker', flat=True)
+ticks = Ticker.objects.values_list('ticker', flat=True)
+list(set(temp1) - set(temp2))
+
+
+
+
+

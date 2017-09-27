@@ -179,7 +179,7 @@ def extractOptions(trList):
         if len(tdList) == 16:
             call = Option()
             call.optionType = 'CALL'
-            call.nasdaqName   = tdList[callNameIndex]               .text
+            call.expiry       = getOptionExpiry( tdList[callNameIndex].text )
             call.contractName = getContractName(tdList[callNameIndex].a['href'])
             call.last         = toFloat( tdList[callLastIndex]      .text )
             call.change       = toFloat( tdList[callChangeIndex]    .text )
@@ -191,7 +191,7 @@ def extractOptions(trList):
             
             put = Option()
             put.optionType = 'PUT'
-            put.nasdaqName   = tdList[putNameIndex]               .text
+            put.expiry       = getOptionExpiry( tdList[putNameIndex].text )
             put.contractName = getContractName(tdList[putNameIndex].a['href'])
             put.last         = toFloat( tdList[putLastIndex]      .text )
             put.change       = toFloat( tdList[putChangeIndex]    .text )
@@ -206,6 +206,9 @@ def extractOptions(trList):
         
     return calls, puts
 
+def getOptionExpiry(dateLiteral):
+    return datetime.strptime(dateLiteral, '%b %d, %Y')
+
 def getContractName(urlWithContractName):
     try:
         token = '/option-chain/'
@@ -215,7 +218,7 @@ def getContractName(urlWithContractName):
         contractName = (arr[1] + arr[0]).upper()
         return contractName   
     except Exception as err:
-        logger.warn('scraper(?). Could not parse contractName from nasdaqName url: ' + urlWithContractName + ' : ' + str(aErr))
+        logger.warn('scraper(?). Could not parse contractName from nasdaqName url: ' + urlWithContractName + ' : ' + str(err))
         return None
     
 # could be better validation around these helper methods

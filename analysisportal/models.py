@@ -50,16 +50,16 @@ class Option(models.Model):
     CALL = 'CALL'
     PUT = 'PUT'
     
-    optionType = models.CharField(max_length=4)
-    nasdaqName = models.CharField(max_length=30)
+    optionType   = models.CharField(max_length=4)
+    expiry       = models.DateField(null=True)
     contractName = models.CharField(max_length=30, null=True)
-    last = models.DecimalField(max_digits=8, decimal_places=2)
-    change = models.DecimalField(max_digits=4, decimal_places=2)
-    bid = models.DecimalField(max_digits=8, decimal_places=2)
-    ask = models.DecimalField(max_digits=8, decimal_places=2)
-    volume = models.IntegerField()
+    last         = models.DecimalField(max_digits=8, decimal_places=2)
+    change       = models.DecimalField(max_digits=4, decimal_places=2)
+    bid          = models.DecimalField(max_digits=8, decimal_places=2)
+    ask          = models.DecimalField(max_digits=8, decimal_places=2)
+    volume       = models.IntegerField()
     openInterest = models.IntegerField()
-    strike = models.DecimalField(max_digits=12, decimal_places=2)
+    strike       = models.DecimalField(max_digits=12, decimal_places=2)
 
     optionChain = models.ForeignKey(OptionChain, on_delete=models.CASCADE)
         

@@ -95,7 +95,7 @@ var optionSearchButton = Ext.create('Ext.Button', {
      extend: 'Ext.data.Model',
      fields: [
         {name: 'callOptionType',   type: 'string'},
-        {name: 'callNasdaqName',   type: 'string'},
+        {name: 'callExpiry',   type: 'string'},
         {name: 'callContractName', type: 'string'},
         {name: 'callLast',         type: 'number'},
         {name: 'callChange',       type: 'number'},
@@ -106,7 +106,7 @@ var optionSearchButton = Ext.create('Ext.Button', {
         {name: 'callStrike',       type: 'number'},
         
         {name: 'putOptionType',   type: 'string'},
-        {name: 'putNasdaqName',   type: 'string'},
+        {name: 'putExpiry',   type: 'string'},
         {name: 'putContractName', type: 'string'},
         {name: 'putLast',         type: 'number'},
         {name: 'putChange',       type: 'number'},
@@ -149,7 +149,7 @@ var optionSearchGrid = Ext.create('Ext.grid.Panel', {
     height: '100%',
     columns: [
         //{ text: 'optionType', dataIndex: 'callOptionType', flex:0.5 },
-        { text: 'Calls', dataIndex: 'callNasdaqName', flex:0.6},
+        { text: 'Calls', dataIndex: 'callExpiry', flex:0.6},
         //{ text: 'contractName', dataIndex: 'callContractName' , flex:0.5},
         { text: 'Last', dataIndex: 'callLast', flex:0.5 },
         { text: 'Change', dataIndex: 'callChange', flex:0.4 },
@@ -160,7 +160,7 @@ var optionSearchGrid = Ext.create('Ext.grid.Panel', {
         { text: 'Strike', dataIndex: 'callStrike', flex:0.5 },
         
         //{ text: 'optionType', dataIndex: 'putOptionType', flex:0.5 },
-        { text: 'Puts', dataIndex: 'putNasdaqName' , flex:0.6},
+        { text: 'Puts', dataIndex: 'putExpiry' , flex:0.6},
         //{ text: 'contractName', dataIndex: 'putContractName', flex:0.5 },
         { text: 'Last', dataIndex: 'putLast' , flex:0.5},
         { text: 'Change', dataIndex: 'putChange' , flex:0.4},
