@@ -106,7 +106,7 @@ def strategyJerryLee(request):
             'earningsDate': o.optionChain.stock.earningsDateStart,
 
             'putOptionType': o.optionType,
-            'putExpiry': o.expiry
+            'putExpiry': o.expiry,
             'putContractName': o.contractName,
             'putLast': o.last,
             'putChange': o.change,
