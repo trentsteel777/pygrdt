@@ -6,8 +6,11 @@ from datetime import *
 from sqlalchemy.sql.expression import false
 from decimal import Decimal as D
 from django.db.models import F
+import logging 
+import json
+logger = logging.getLogger(__name__)
 
-# Create your views here.
+EXPIRY_DATE_FORMAT = '%b %d, %Y'
 
 def analyze(request):
     return render(request, 'analysisportal/analyze.html', {})
@@ -28,18 +31,14 @@ def optionExpiriesList(request):
     searchDate_from = datetime(searchDate.year, searchDate.month, searchDate.day, searchHour,0,0, tzinfo=timezone.utc)
     searchDate_to = datetime(searchDate.year, searchDate.month, searchDate.day, searchHour + 1, 0, 0, tzinfo=timezone.utc)
   
-    expiryList = Option.objects.filter(optionChain__stock__ticker__ticker__in=wlTickersSymbolList, 
+    expiryList = Option.objects.order_by('expiry').filter(optionChain__stock__ticker__ticker__in=wlTickersSymbolList, 
                                        optionChain__stock__timestamp__gte=searchDate_from,  
-                                       optionChain__stock__timestamp__lt=searchDate_to).values_list('expiry', flat=True).distinct()
-                                      
-    expiryList = list(filter(None, expiryList)) # Remove any empty strings
-    expiryList = sorted(expiryList, key=lambda x: datetime.strptime(x, '%b %d, %Y'))
+                                       optionChain__stock__timestamp__lt=searchDate_to).distinct().values_list('expiry', flat=True)
     
     expiryJsonList = []
-    
     for e in expiryList:
         expiryJsonList.append({
-                'expiry' : e,
+                'expiry' : e.strftime(EXPIRY_DATE_FORMAT),
             })
     if expiryJsonList:
         expiryJsonList.insert( 0, {'expiry' : 'ALL'})
@@ -64,11 +63,8 @@ def strategyJerryLee(request):
     searchDate_from = datetime(searchDate.year, searchDate.month, searchDate.day, searchHour,0,0, tzinfo=timezone.utc)
     searchDate_to = datetime(searchDate.year, searchDate.month, searchDate.day, searchHour + 1, 0, 0, tzinfo=timezone.utc)
     
-    expiry = qd['expiry']
-    
     start = (int(qd.__getitem__('start')))
     limit = (start + int(qd.__getitem__('limit')))
-    
     
     filters = { 
         'optionChain__stock__ticker__ticker__in': wlTickersSymbolList,
@@ -79,30 +75,33 @@ def strategyJerryLee(request):
         'strike__gte' : F('optionChain__stock__price') * D(0.75), 
         'strike__lte' : F('optionChain__stock__price') * D(0.85), 
     }
-    if expiry != 'ALL':
-        filters['expiry'] = expiry
+    if qd['expiry'] != 'ALL':
+        filters['expiry'] = datetime.strptime(qd['expiry'], EXPIRY_DATE_FORMAT)
         
-    optionsList = Option.objects.filter(**filters).order_by('optionChain__stock__ticker__ticker','','')[start : limit]
+    sharesPerContract = 100
+    annotations = {
+        'marginOfSafety' : ( (F('optionChain__stock__price') - F('strike')) / F('optionChain__stock__price') ),
+        'returnOnOption' : F('bid') / ((F('strike') * D(0.1)) + F('bid')),
+        'marginPerContract' :  (((F('strike') * D(0.1)) + F('bid')) * sharesPerContract),
+        'exposurePerContract' : (F('optionChain__stock__price') * sharesPerContract),
+    }
+    
+    orderByParams = getJerryLeeSorter(qd['sort'])
+    if not orderByParams:
+        orderByParams = ['optionChain__stock__ticker__ticker','strike','expiry']
+        
+    optionsList = Option.objects.filter(**filters).annotate(**annotations).order_by(*orderByParams)[start : limit]
+        
     optionsTotal = Option.objects.filter(**filters).count()
 
-    sharesPerContract = 100
     optionsJsonArr = []
     for o in optionsList:
-        
-        stockPrice = o.optionChain.stock.price
-        putStrike = o.strike
-        
-        marginOfSafety = (stockPrice - putStrike) / stockPrice
-        returnOnOption = o.bid / ((putStrike * D(0.1)) + o.bid)
-        marginPerContract = ((putStrike * D(0.1)) + o.bid) * sharesPerContract
-        exposurePerContract = stockPrice * sharesPerContract
-        
         optionsJsonArr.append({
             'ticker' : o.optionChain.stock.ticker.ticker,
-            'marginOfSafety':marginOfSafety,
-            'return': returnOnOption,
-            'margin': marginPerContract,
-            'exposure': exposurePerContract,
+            'marginOfSafety':o.marginOfSafety,
+            'return': o.returnOnOption,
+            'margin': o.marginPerContract,
+            'exposure': o.exposurePerContract,
             'earningsDate': o.optionChain.stock.earningsDateStart,
 
             'putOptionType': o.optionType,
@@ -114,8 +113,8 @@ def strategyJerryLee(request):
             'putAsk': o.ask,
             'putVolume': o.volume,
             'putOpenInterest': o.openInterest,
-            'putStrike': putStrike,
-            'stockPrice': stockPrice,
+            'putStrike': o.strike,
+            'stockPrice': o.optionChain.stock.price,
             'earningsDate': o.optionChain.stock.earningsDateStart,
             
         })
@@ -124,28 +123,19 @@ def strategyJerryLee(request):
 
     return JsonResponse(data)
     
-def validate_username(request):
-    username = request.GET.get('username', None)
-    data = {
-        'is_taken': False,
-        'test':[{'hello':45},{'goodbye':55}]
-    }
-    data = {
-           'optionChain' : [{
-           'optionType': 'CALL',
-           'expiry': 'July, 2017',
-           'contractName': '',
-           'last': 4.53,
-           'change': 0.12,
-           'bid': 4.6,
-           'ask': 4.7,
-           'volume': 1027,
-           'openInterest': 504,
-           'strike': 125,
-       }]
-    }
-    return JsonResponse(data)
-
+def getJerryLeeSorter(sortJson):
+    sortParam = json.loads(sortJson)
+    
+    paramArr = []
+    for sp in sortParam:
+        param = sp['property']
+        if sp['direction'] == 'DESC':
+            param = '-' + param
+        paramArr.append(param)
+        
+    return paramArr
+    
+    
 def dispatcher(request):
     qd = getQd(request)
     action = qd.__getitem__('action')
@@ -158,7 +148,8 @@ def dispatcher(request):
         current_module = sys.modules[__name__]
         ajaxMethod = getattr(current_module, action)
         return ajaxMethod(request)
-    except:
+    except Exception as err:
+        logger.debug('views.dispatcher -> ' + str(err))
         return JsonResponse(data)
     
 # returns query dictionary from request

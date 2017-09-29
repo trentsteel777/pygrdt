@@ -169,7 +169,7 @@ Ext.define('Grdt.optionexpiry.Store', {
             action: 'optionExpiriesList'
         },
      },
-    autoLoad: true,
+    autoLoad: false,
      
 });
 

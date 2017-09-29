@@ -40,7 +40,7 @@ Stock.objects.filter(timestamp__date=date.today())
 # check what scraper didn't scrape (assuming only one day of data in database)
 stocks = Stock.objects.values_list('ticker__ticker', flat=True)
 ticks = Ticker.objects.values_list('ticker', flat=True)
-list(set(temp1) - set(temp2))
+list(set(ticks) - set(stocks))
 
 
 

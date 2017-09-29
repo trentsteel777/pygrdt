@@ -132,6 +132,26 @@ var jerryLeeSearchButton = Ext.create('Ext.Button', {
     disabled: true,
     autoLoad: false,
     handler: function() {
+        var ticker = Ext.getCmp('jlTickerCol').getSortParam();
+        var expiry = Ext.getCmp('jExpiryCol').getSortParam();
+        var strike = Ext.getCmp('jlStrikeCol').getSortParam();
+        
+        jerryLeeStore.setSorters(
+            [
+                {
+                     property: ticker,
+                     direction: 'ASC'
+                }, 
+                {
+                     property: expiry,
+                     direction: 'ASC'
+                },
+                {
+                     property: strike,
+                     direction: 'ASC'
+                },
+            ]
+        );
         Ext.data.StoreManager.lookup('jerryLeeStore').loadPage(1);
     }
 });
@@ -217,11 +237,11 @@ var jerryLeeGrid = Ext.create('Ext.grid.Panel', {
     columns: [
         //{ text: 'optionType', dataIndex: 'putOptionType', flex:0.5 },
         
-        { text: 'Ticker', dataIndex: 'ticker' , flex:0.5},
-        { text: 'Puts', dataIndex: 'putExpiry' , flex:0.6},
-        { text: 'Strike', dataIndex: 'putStrike' , flex:0.5}, // already displayed by callStrike as they are the same
+        { id:'jlTickerCol', text: 'Ticker', dataIndex: 'ticker' , flex:0.5, getSortParam: function() {return 'optionChain__stock__ticker__ticker';},},
+        { id:'jExpiryCol', text: 'Puts', dataIndex: 'putExpiry' , flex:0.6, getSortParam: function() {return 'expiry';},},
+        { id:'jlStrikeCol', text: 'Strike', dataIndex: 'putStrike' , flex:0.5, getSortParam: function() {return 'strike';},},
         
-        { id:'mosCol', text: 'MOS (%)', dataIndex: 'marginOfSafety', flex:0.6, renderer: toDecimal, 
+        { id:'mosCol', text: 'MOS (%)', dataIndex: 'marginOfSafety', flex:0.6, renderer: toDecimal, getSortParam: function() {return 'marginOfSafety';}, 
         listeners:{
             afterrender: function(thiz) {
                 new Ext.tip.ToolTip({
@@ -231,18 +251,18 @@ var jerryLeeGrid = Ext.create('Ext.grid.Panel', {
             }
         },
         },
-        { text: 'Return (%)', dataIndex: 'return' , flex:0.6, renderer: toDecimal, },
-        { text: 'Margin ($)', dataIndex: 'margin' , flex:0.6},
-        { text: 'Exposure', dataIndex: 'exposure' , flex:0.6},
-        { text: 'Earnings', formatter:'date("Y-m-d")',dataIndex: 'earningsDate' , flex:0.6 },
+        { text: 'Return (%)', dataIndex: 'return' , flex:0.6, renderer: toDecimal, getSortParam: function() {return 'returnOnOption';}, },
+        { text: 'Margin ($)', dataIndex: 'margin' , flex:0.6, getSortParam: function() {return 'marginPerContract';},},
+        { text: 'Exposure', dataIndex: 'exposure' , flex:0.6, getSortParam: function() {return 'exposurePerContract';},},
+        { text: 'Earnings', formatter:'date("Y-m-d")',dataIndex: 'earningsDate' , flex:0.6, getSortParam: function() {return 'optionChain__stock__earningsDateStart';}, },
         
         //{ text: 'contractName', dataIndex: 'putContractName', flex:0.5 },
-        { text: 'Last', dataIndex: 'putLast' , flex:0.5},
-        { text: 'Change', dataIndex: 'putChange' , flex:0.4},
-        { text: 'Bid', dataIndex: 'putBid' , flex:0.5},
-        { text: 'Ask', dataIndex: 'putAsk' , flex:0.5},
-        { text: 'Volume', dataIndex: 'putVolume', flex:0.5 },
-        { text: 'Open Interest', dataIndex: 'putOpenInterest' , flex:0.5},
+        { text: 'Last', dataIndex: 'putLast' , flex:0.5, getSortParam: function() {return 'last';},},
+        { text: 'Change', dataIndex: 'putChange' , flex:0.4, getSortParam: function() {return 'change';},},
+        { text: 'Bid', dataIndex: 'putBid' , flex:0.5, getSortParam: function() {return 'bid';},},
+        { text: 'Ask', dataIndex: 'putAsk' , flex:0.5, getSortParam: function() {return 'ask';},},
+        { text: 'Volume', dataIndex: 'putVolume', flex:0.5, getSortParam: function() {return 'volume';}, },
+        { text: 'Open Interest', dataIndex: 'putOpenInterest' , flex:0.5, getSortParam: function() {return 'openInterest';},},
         
         
     ],
