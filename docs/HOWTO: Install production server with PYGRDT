@@ -1,0 +1,65 @@
+Installing GUNICRON and NGINX to run Django/ Pygrdt in production
+#Ref: Webpages have also been saved in docs folder of pygrdt
+# http://rahmonov.me/posts/run-a-django-app-with-gunicorn-in-ubuntu-16-04/
+# http://rahmonov.me/posts/run-a-django-app-with-nginx-and-gunicorn/
+# http://rahmonov.me/posts/run-a-django-app-with-nginx-gunicorn-and-supervisor/
+
+sudo apt-get install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx
+
+pip install gunicorn
+#gunicorn myproject.wsgi
+gunicorn --bind 192.168.1.25:8000 pygrdt.wsgi
+
+gunicorn --daemon myproject.wsgi
+
+sudo apt-get install nginx
+
+# After file configuration
+/etc/nginx/sites-available/pygrdt
+
+# Enable this file by linking it to the sites-enabled folder:
+sudo ln -s /etc/nginx/sites-available/pygrdt /etc/nginx/sites-enabled
+
+
+# Check if configuration file was correctly written:
+sudo nginx -t
+
+# The location needs to be and is already set in pygrdt.settings.py
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticroot/')
+
+# Deploy static contect to nginx folder
+./manage.py collectstatic
+
+
+
+gunicorn --daemon --workers 1 --bind unix:/home/odroid/venvs/pygrdt/pygrdt.sock pygrdt.wsgi
+sudo service nginx restart
+
+# http://cheng.logdown.com/posts/2015/04/17/better-way-to-run
+# kill -9 `ps aux |grep gunicorn |grep your_app_name | awk '{ print $2 }'`  # will kill all of the workers
+sudo kill -9 `ps aux |grep gunicorn |grep pygrdt | awk '{ print $2 }'`
+
+sudo apt-get install supervisor
+sudo service supervisor restart
+sudo pluma /etc/supervisor/conf.d/pygrdt.conf
+
+sudo supervisorctl reload
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl status pygrdt
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
