@@ -17,3 +17,4 @@ logs/scraper/*
 logs/*
 staticroot
 Webpages
+pip-selfcheck.json
