@@ -15,3 +15,5 @@ analysisportal/pricescrapers/data/
 selenium
 logs/scraper/*
 logs/*
+staticroot
+Webpages
