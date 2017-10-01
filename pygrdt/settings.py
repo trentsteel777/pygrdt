@@ -125,7 +125,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # On dev machine -> '/home/trent/Workspace/django_virtual_environments/pygrdtvenv/static'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticroot')
 
 
 STATICFILES_DIRS = (
